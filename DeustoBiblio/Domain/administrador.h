@@ -1,10 +1,3 @@
-/*
- * administrador.h
- *
- *  Created on: 28 feb 2025
- *      Author: Naroa Azcona
- */
-
 #ifndef DOMAIN_ADMINISTRADOR_H_
 #define DOMAIN_ADMINISTRADOR_H_
 

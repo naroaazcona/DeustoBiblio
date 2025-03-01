@@ -1,10 +1,3 @@
-/*
- * cliente.h
- *
- *  Created on: 28 feb 2025
- *      Author: Naroa Azcona
- */
-
 #ifndef DOMAIN_CLIENTE_H_
 #define DOMAIN_CLIENTE_H_
 

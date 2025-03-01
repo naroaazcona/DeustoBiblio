@@ -1,10 +1,3 @@
-/*
- * libro.h
- *
- *  Created on: 28 feb 2025
- *      Author: Naroa Azcona
- */
-
 #ifndef DOMAIN_LIBRO_H_
 #define DOMAIN_LIBRO_H_
 
