@@ -3,7 +3,7 @@
 
 void iniciarSesionCliente(char *email, char *contrasenia){
 
-	printf("Iniciando sesion como cliente...\n")
+	printf("Iniciando sesion como cliente...\n");
 	printf("Introduce tu email: ");
 	fflush(stdout);
 	fflush(stdin);
