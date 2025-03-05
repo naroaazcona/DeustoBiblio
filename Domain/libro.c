@@ -9,7 +9,7 @@ Libro pedirDatosLibro(){
 	printf("ISBN: ");
 	fflush(stdout);
 	fflush(stdin);
-	scanf("%d", &l.ISBN);
+	gets(l.ISBN);
 	printf("TÍTULO: ");
 	fflush(stdout);
 	fflush(stdin);
@@ -37,7 +37,7 @@ void visualizarTitulosLibro(){
 }
 
 void visualizarLibro(Libro l){
-	printf("%20d%20s%10d%20s%15s%10d\n", l.ISBN, l.titulo, l.anioPubli, l.autor, l.genero, l.disponibilidad);
+	printf("%20s%20s%10d%20s%15s%10d\n", l.ISBN, l.titulo, l.anioPubli, l.autor, l.genero, l.disponibilidad);
 
 }
 
@@ -45,16 +45,17 @@ void marcarLibroComoNoDispo(Libro *l){
 	l->disponibilidad = 0;
 }
 
-/*
+
 void aniadirLibro(ListaLibros *ll, Libro l){
 
 }
 
-void eliminarLibro(ListaLibros *ll, Libro l){
+void eliminarLibro(ListaLibros *listaLibro, char *isbn){
 
 }
 
 int buscarLibro(ListaLibros ll, char * isbn){
+	return 0;
 
 }
 
@@ -63,12 +64,14 @@ void visualizarLibros(ListaLibros ll){
 }
 
 int alquilarLibro(ListaLibros *ll, char *isbn){
+	return 0;
 
 }
 
 int devolverLibro(ListaLibros *ll, char *isbn){
+	return 0;
 
-}*/
+}
 
 
 #endif /* DOMAIN_LIBRO_C_ */

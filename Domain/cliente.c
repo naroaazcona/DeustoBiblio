@@ -17,7 +17,7 @@ void iniciarSesionCliente(char *email, char *contrasenia){
 }
 
 
-void registroCliente(){
+void registrar(){
 	Cliente c;
 
 	printf("Registrando nuevo usuario....\n");
@@ -50,6 +50,23 @@ void registroCliente(){
 	fflush(stdout);
 	fflush(stdin);
 	gets(c.contrasenia);
+
+}
+
+void reservaLibros(Cliente *cliente, ListaLibros *listaLibros, char *isbn){
+
+
+}
+void devolverLibroCliente(Cliente *cliente, ListaLibros *listaLibros, char *isbn){
+
+
+}
+void verLibrosReservador(Cliente c){
+
+
+}
+void verPerfil(Cliente c){
+
 
 }
 

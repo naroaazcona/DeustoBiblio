@@ -13,4 +13,5 @@ void eliminarLibroAdmin(Admin *admin, ListaLibros *listaLibros, char *isbn);
 void verLibrosAdmin(ListaLibros listaLibros);
 
 
+
 #endif /* DOMAIN_ADMINISTRADOR_H_ */

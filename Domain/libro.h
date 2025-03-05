@@ -2,7 +2,7 @@
 #define DOMAIN_LIBRO_H_
 
 typedef struct{
-	int ISBN;
+	char ISBN[10];
 	char titulo[50];
 	int anioPubli;
 	char autor[20];

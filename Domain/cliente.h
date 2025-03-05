@@ -1,6 +1,8 @@
 #ifndef DOMAIN_CLIENTE_H_
 #define DOMAIN_CLIENTE_H_
 
+#include "libro.h"
+
 typedef struct{
 	char dni[10];
 	char nombre[20];
@@ -9,14 +11,14 @@ typedef struct{
 	char contrasenia[50];
 	char numeroTlf[10];
 	char direccion[50];
-	Libro librosReservados[];
 	int numerosLReservados;
+	Libro librosReservados[];
 }Cliente;
 
-void registriar();
-void inicioSesion(Cliente *cliente);
+void registrar();
+void iniciarSesionCliente(/*Cliente *cliente*/char *email, char *contrasenia);
 void reservaLibros(Cliente *cliente, ListaLibros *listaLibros, char *isbn);
-void devolverLibro(Cliente *cliente, ListaLibros *listaLibros, char *isbn);
+void devolverLibroCliente(Cliente *cliente, ListaLibros *listaLibros, char *isbn);
 void verLibrosReservador(Cliente c);
 void verPerfil(Cliente c);
 
