@@ -3,6 +3,7 @@
 #include "libro.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 Libro pedirDatosLibro(){
 	Libro l;
@@ -47,19 +48,54 @@ void marcarLibroComoNoDispo(Libro *l){
 
 
 void aniadirLibro(ListaLibros *ll, Libro l){
+	int i;
+	if(ll->aLibros == NULL){
+		ll->aLibros = (Libro*)malloc(1*sizeof(Libro));
+	}else{
+		Libro *aux = (Libro*)malloc(ll->numeroLibros * sizeof(Libro));
+		for(i=0; i<ll->numeroLibros;i++){
+			ll->aLibros[i] = aux[i];
+		}
+		free(aux);
+	}
+	ll->aLibros[ll->numeroLibros] = l;
+	ll->numeroLibros++;
 
 }
 
-void eliminarLibro(ListaLibros *listaLibro, char *isbn){
+void eliminarLibro(ListaLibros *listaLibro, Libro libro){
+	int i;
+	int pos = buscarLibro(*listaLibro, libro.ISBN);
+	if(pos == -1){
+		printf("No se ha eliminado el libro porque no existe en la biblioteca\n");
+	}else{
+		for(i=pos; i<listaLibro->numeroLibros -1; i++){
+			listaLibro->aLibros[i] = listaLibro->aLibros[i+1];
+		}
+		listaLibro->numeroLibros--;
+	}
 
 }
 
 int buscarLibro(ListaLibros ll, char * isbn){
-	return 0;
+	int pos = 0, enc = 0;
+	while(!enc && pos < ll.numeroLibros){
+		if(strcmp(ll.aLibros[pos].ISBN, isbn) == 0){
+			enc = 1;
+		}else{
+			pos++;
+		}
+	}
+	if(enc == 1){
+		return pos;
+	}else{
+		return -1;
+	}
 
 }
 
 void visualizarLibros(ListaLibros ll){
+
 
 }
 

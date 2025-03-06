@@ -11,7 +11,7 @@ typedef struct{
 }Libro;
 
 typedef struct{
-	Libro libros[200];
+	Libro * aLibros;
 	int numeroLibros;
 }ListaLibros;
 
@@ -20,7 +20,7 @@ void visualizarTitulosLibro();
 void visualizarLibro(Libro l);
 void marcarLibroComoNoDispo(Libro *l);
 void aniadirLibro(ListaLibros *listaLibros, Libro libro);
-void eliminarLibro(ListaLibros *listaLibro, char *isbn);
+void eliminarLibro(ListaLibros *listaLibro, Libro libro);
 int buscarLibro(ListaLibros listaLibros, char *isbn);
 void visualizarListaLibros(ListaLibros listaLibros);
 int alquilarLibro(ListaLibros *ll, char *isbn);
