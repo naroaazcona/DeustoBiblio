@@ -69,7 +69,7 @@ int main(){
 					opcionClienteInicio = menuClienteInicio();
 					switch(opcionClienteInicio){
 						case '1':
-							iniciarSesionCliente(c.email, c.contrasenia);
+							iniciarSesionCliente(&c, c.email, c.contrasenia);
 							do{
 								opcionClientePrincipal = menuPrincipalCliente();
 								switch(opcionClientePrincipal){

@@ -15,8 +15,10 @@ typedef struct{
 	Libro librosReservados[];
 }Cliente;
 
+int telefonoValido(char *telefono);
+int dniValido(char *dni);
 void registrar();
-void iniciarSesionCliente(/*Cliente *cliente*/char *email, char *contrasenia);
+void iniciarSesionCliente(Cliente *cliente, char *email, char *contrasenia);
 void reservaLibros(Cliente *cliente, ListaLibros *listaLibros, char *isbn);
 void devolverLibroCliente(Cliente *cliente, ListaLibros *listaLibros, char *isbn);
 void verLibrosReservador(Cliente c);
