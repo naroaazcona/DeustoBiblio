@@ -110,7 +110,6 @@ void iniciarSesionCliente(Cliente *cliente, char *email, char *contrasenia){
 	fflush(stdout);
 	fflush(stdin);
 	gets(email);
-	email[strcspn(email, "\n")] = 0;
 
 	ficheroClientes = fopen("clientes.txt", "r");
 	    if (ficheroClientes == NULL) {

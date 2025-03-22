@@ -20,7 +20,7 @@ int main(){
 					opcionAdminInicio = menuAdministradorInicio();
 					switch(opcionAdminInicio){
 					case '1':
-						iniciarSesion(admin.usuario, admin.contrasenia);
+						iniciarSesion(&admin, admin.usuario, admin.contrasenia);
 						do{
 							opcionAdminPrincipal = menuPrincipalAdministrador();
 							switch(opcionAdminPrincipal){
@@ -52,7 +52,7 @@ int main(){
 									fflush(stdout);
 							}
 
-						}while(opcionAdminPrincipal != 0);
+						}while(opcionAdminPrincipal != '0');
 						break;
 					case '0':
 						printf("Volviendo al menú principal...\n");
@@ -106,7 +106,7 @@ int main(){
 										fflush(stdout);
 								}
 
-							}while(opcionClientePrincipal != 0);
+							}while(opcionClientePrincipal != '0');
 							break;
 						case '2':
 							registrar();
@@ -120,7 +120,7 @@ int main(){
 							fflush(stdout);
 					}
 
-				}while(opcion !='0');
+				}while(opcionClienteInicio !='0');
 
 				break;
 			case '0':

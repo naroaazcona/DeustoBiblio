@@ -7,7 +7,7 @@ typedef struct{
 	char contrasenia[50];
 }Admin;
 
-void iniciarSesion(char *usuario, char *contrasenia);
+void iniciarSesion(Admin *admin, char *usuario, char *contrasenia);
 void agregarLibro(Admin *admin, ListaLibros *listaLibros);
 void eliminarLibroAdmin(Admin *admin, ListaLibros *listaLibros, char *isbn);
 void verLibrosAdmin(ListaLibros listaLibros);

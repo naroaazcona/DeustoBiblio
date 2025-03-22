@@ -39,6 +39,7 @@ void visualizarTitulosLibro(){
 
 void visualizarLibro(Libro l){
 	printf("%20s%20s%10d%20s%15s%10d\n", l.ISBN, l.titulo, l.anioPubli, l.autor, l.genero, l.disponibilidad);
+	fflush(stdout);
 
 }
 
