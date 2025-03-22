@@ -81,7 +81,7 @@ int main(){
 									case '2':
 										printf("Ver libros disponibles\n");
 										fflush(stdout);
-										verLibrosReservador(c);
+										verLibrosReservados(c);
 										break;
 									case '3':
 										printf("Reservar libros\n");
@@ -96,7 +96,7 @@ int main(){
 									case '5':
 										printf("Ver libros reservados\n");
 										fflush(stdout);
-										verLibrosReservador(c);
+										verLibrosReservados(c);
 										break;
 									case '0':
 										printf("Volviendo al menu principal...\n");

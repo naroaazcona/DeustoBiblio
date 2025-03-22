@@ -21,7 +21,7 @@ void registrar();
 void iniciarSesionCliente(Cliente *cliente, char *email, char *contrasenia);
 void reservaLibros(Cliente *cliente, ListaLibros *listaLibros, char *isbn);
 void devolverLibroCliente(Cliente *cliente, ListaLibros *listaLibros, char *isbn);
-void verLibrosReservador(Cliente c);
+void verLibrosReservados(Cliente c);
 void verPerfil(Cliente c);
 
 

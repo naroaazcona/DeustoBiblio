@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 int telefonoValido(char *telefono){
 	if(strlen(telefono)!=9) return 0;
@@ -154,6 +155,61 @@ void iniciarSesionCliente(Cliente *cliente, char *email, char *contrasenia){
 }
 
 void reservaLibros(Cliente *cliente, ListaLibros *listaLibros, char *isbn){
+	int pos = buscarLibro(*listaLibros, isbn);
+	if(pos == -1){
+		printf("El libro con ISBN %s no se encuentra en la bibliotes \n", isbn);
+		return;
+	}
+	if (listaLibros->aLibros[pos].disponibilidad == 0){
+		printf("El libro ya está reservado por otro usuario \n");
+		return;
+	}
+
+	//LÍMITE MÁXIMO DE LIBROS RESERVADOS POR CLIENTE -> 10
+	if(cliente->numerosLReservados < 10){
+		strcpy(cliente->librosReservados[cliente->numerosLReservados].ISBN);
+		cliente->numerosLReservados++;
+	}else{
+		printf("Has alcanzado el límite de libros reservados \n");
+		return;
+	}
+
+	//GUARDAR CAMBIOS EN EL FICHERO CLIENTES
+	FILE *ficheroClientes = fopen("clientes.txt", "r");
+		if(ficheroClientes == NULL){
+			printf("No se pudo abrir el archivo de clientes \n");
+			fflush(stdout);
+			return;
+		}
+
+		char linea[256], buffer[5000] = "";
+		while (fgets(linea, sizeof(linea), ficheroClientes)){
+			Cliente temp;
+			sscanf(linea, "%9[^;];%19[^;];%19[^;];%49[^;];%49[^;];%9[^;];%49[^;];%d",temp.dni, temp.nombre, temp.apellido, temp.email, temp.contrasenia, temp.numeroTlf, temp.direccion, &temp.numerosLReservados);
+
+			if(strcmp(temp.dni, cliente->dni) == 0){
+				temp.numerosLReservados = cliente->numerosLReservados;
+			}
+
+			char nuevaLinea [256];
+			sprinf(nuevaLinea,  "%s;%s;%s;%s;%s;%s;%s;%d\n", temp.dni, temp.nombre, temp.apellido, temp.email, temp.contrasenia, temp.numeroTlf, temp.direccion, temp.numerosLReservados);
+			strcat(buffer, nuevaLinea);
+		}
+
+		fclose(ficheroClientes);
+
+		//SOBRESRIBIR EL ARCHIVO
+		ficheroClientes = fopen("clientes.txt", "w");
+		if(ficheroClientes == NULL){
+			printf("No se pudo abrir el archcivo de clientes \n");
+			fflush(stdout);
+			return;
+		}
+
+		fprint(ficheroClientes, "%s", buffer);
+		fclose(ficheroClientes);
+
+		print("Reserva realizada con éxito para el libro con ISBN: %s \n", isbn);
 
 
 }
@@ -161,7 +217,7 @@ void devolverLibroCliente(Cliente *cliente, ListaLibros *listaLibros, char *isbn
 
 
 }
-void verLibrosReservador(Cliente c){
+void verLibrosReservados(Cliente c){
 
 
 }
