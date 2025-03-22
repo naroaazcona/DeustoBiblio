@@ -218,6 +218,15 @@ void devolverLibroCliente(Cliente *cliente, ListaLibros *listaLibros, char *isbn
 
 }
 void verLibrosReservados(Cliente c){
+	if(c.numerosLReservados == 0){
+		printf("No tienes libros reservados \n");
+		return;
+	}
+
+	printf("Libros reservados por %s %s : \n", c.nombre, c.apellido);
+	for(int i = 0; i<c.numerosLReservados; i++){
+		printf(" - ISBN: %s \n", c.librosReservados[i].ISBN);
+	}
 
 
 }
