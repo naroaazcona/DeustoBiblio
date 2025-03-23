@@ -20,6 +20,7 @@ int dniValido(char *dni);
 void registrar();
 void iniciarSesionCliente(Cliente *cliente, char *email, char *contrasenia);
 void reservaLibros(Cliente *cliente, ListaLibros *listaLibros, char *isbn);
+int buscarLibroCliente(Cliente c, char *isbn);
 void devolverLibroCliente(Cliente *cliente, ListaLibros *listaLibros, char *isbn);
 void verLibrosReservados(Cliente c);
 void verPerfil(Cliente c);

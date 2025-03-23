@@ -1,8 +1,8 @@
 #include "cliente.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
 
 int telefonoValido(char *telefono){
 	if(strlen(telefono)!=9) return 0;
@@ -167,7 +167,7 @@ void reservaLibros(Cliente *cliente, ListaLibros *listaLibros, char *isbn){
 
 	//LÍMITE MÁXIMO DE LIBROS RESERVADOS POR CLIENTE -> 10
 	if(cliente->numerosLReservados < 10){
-		strcpy(cliente->librosReservados[cliente->numerosLReservados].ISBN);
+//		strcpy(cliente->librosReservados[cliente->numerosLReservados].ISBN);
 		cliente->numerosLReservados++;
 	}else{
 		printf("Has alcanzado el límite de libros reservados \n");
@@ -192,7 +192,7 @@ void reservaLibros(Cliente *cliente, ListaLibros *listaLibros, char *isbn){
 			}
 
 			char nuevaLinea [256];
-			sprinf(nuevaLinea,  "%s;%s;%s;%s;%s;%s;%s;%d\n", temp.dni, temp.nombre, temp.apellido, temp.email, temp.contrasenia, temp.numeroTlf, temp.direccion, temp.numerosLReservados);
+			sprintf(nuevaLinea,  "%s;%s;%s;%s;%s;%s;%s;%d\n", temp.dni, temp.nombre, temp.apellido, temp.email, temp.contrasenia, temp.numeroTlf, temp.direccion, temp.numerosLReservados);
 			strcat(buffer, nuevaLinea);
 		}
 
@@ -206,17 +206,49 @@ void reservaLibros(Cliente *cliente, ListaLibros *listaLibros, char *isbn){
 			return;
 		}
 
-		fprint(ficheroClientes, "%s", buffer);
+		fprintf(ficheroClientes, "%s", buffer);
 		fclose(ficheroClientes);
 
-		print("Reserva realizada con éxito para el libro con ISBN: %s \n", isbn);
+		printf("Reserva realizada con éxito para el libro con ISBN: %s \n", isbn);
 
 
 }
+
+int buscarLibroCliente(Cliente c, char *isbn){
+	int pos = 0, enc = 0;
+		while (!enc && pos < c.numerosLReservados) {
+			if (strcmp(c.librosReservados[pos].ISBN, isbn) == 0) {
+				enc = 1;
+			} else {
+				pos++;
+			}
+		}
+		if (enc == 1) {
+			return pos;
+		} else {
+			return -1;
+		}
+}
+
 void devolverLibroCliente(Cliente *cliente, ListaLibros *listaLibros, char *isbn){
+	int pos = buscarLibroCliente(*cliente, isbn);
 
+	if(pos == -1){
+		printf("Lo sentimos, no tenemos ese libro en la biblioteca\n");
+		fflush(stdout);
+	}else{
+		if(cliente->librosReservados[pos].disponibilidad == 0){
+			cliente->librosReservados[pos].disponibilidad = 1;
+			eliminarLibro(listaLibros, cliente->librosReservados[pos]);
+			cliente->numerosLReservados--;
 
+		}else{
+			printf("Lo sentimos, ese libro no está alquilado\n");
+			fflush(stdout);
+		}
+	}
 }
+
 void verLibrosReservados(Cliente c){
 	if(c.numerosLReservados == 0){
 		printf("No tienes libros reservados \n");
@@ -231,6 +263,8 @@ void verLibrosReservados(Cliente c){
 
 }
 void verPerfil(Cliente c){
+	printf("%15s%20s%20s%30s%20s%20s%30s%10d\n", c.dni, c.nombre, c.apellido, c.email, c.contrasenia, c.numeroTlf, c.direccion, c.numerosLReservados);
+	fflush(stdout);
 
 
 }
