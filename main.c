@@ -6,7 +6,8 @@
 #include "domain/libro.h"
 
 int main(){
-	char opcion, opcionClienteInicio, opcionAdminInicio, opcionClientePrincipal, opcionAdminPrincipal;
+	char opcion, opcionClienteInicio, opcionAdminInicio, opcionClientePrincipal, opcionAdminPrincipal, usuario[20], contrasenia[20];
+	int resultado, intentos;
 	Cliente c;
 	Admin admin;
 	ListaLibros listaLibros;
@@ -20,7 +21,15 @@ int main(){
 					opcionAdminInicio = menuAdministradorInicio();
 					switch(opcionAdminInicio){
 					case '1':
-						iniciarSesion(&admin, admin.usuario, admin.contrasenia);
+						iniciarSesion(usuario, contrasenia, &resultado, &intentos);
+						if (resultado != 2) {
+							printf("Se te han acabado los intentos\n");
+							fflush(stdout);
+							break;
+						} else {
+							printf("Ongi etorri!!!\n");
+							fflush(stdout);
+						}
 						do{
 							opcionAdminPrincipal = menuPrincipalAdministrador();
 							switch(opcionAdminPrincipal){

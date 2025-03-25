@@ -3,56 +3,55 @@
 #include <stdlib.h>
 #include <string.h>
 
-void iniciarSesion(Admin *admin, char *usuario, char *contrasenia) {
-	int encontrado = 0;
-	int intentos = 3;
-	FILE *fichero = fopen("admin.txt", "r");
-
+void iniciarSesion(char *usuario, char *contrasenia, int *resultado,
+		int *intentos) {
+	char linea[200];
+	*intentos = 3;
+	*resultado = 0;
 	printf("Iniciando sesion como administrador...\n");
 	printf("Introduce tu nombre de usuario: ");
 	fflush(stdout);
 	fflush(stdin);
 	gets(usuario);
-	//fgets(usuario, 50, stdin);
-	//usuario[strcspn(usuario, "\n")] = 0;
-
-	if (fichero == NULL) {
-		printf("Error en la apertura del fichero");
-		fflush(stdout);
-		return;
-	} else {
-		while (fscanf(fichero, "%49[^;];%49[^;]\n", admin->usuario,
-				admin->contrasenia) != EOF) {
-			if (strcmp(usuario, admin->usuario) == 0) {
-				encontrado = 1;
-				while (intentos > 0) {
-					printf("Introduce tu contraseña (%d intentos restantes): ",
-							intentos);
-					fflush(stdout);
-					fflush(stdin);
-					gets(contrasenia);
-
-					if (strcmp(contrasenia, admin->contrasenia) == 0) {
-						printf("Bienvenid@, %s!\n", admin->usuario);
-						fclose(fichero);
-						return;
-					} else {
-						printf("Contraseña incorrecta. \n");
-						intentos--;
+	printf("Introduce tu contrase�a (%d intentos restantes): ", *intentos);
+	fflush(stdout);
+	fflush(stdin);
+	gets(contrasenia);
+	while (*resultado != 2 && *intentos > 0) {
+		(*intentos)--;
+		FILE *fichero = fopen("admin.txt", "r");
+		if (fichero != (FILE*) NULL) {
+			while (fscanf(fichero, "%s", linea) !=EOF && *resultado != 2) {
+				char *u = strtok(linea, ";");
+				char *c = strtok(NULL, "");
+				if (strcmp(u, usuario) == 0) {
+					*resultado = 1;
+					if (strcmp(c, contrasenia) == 0) {
+						*resultado = 2;
 					}
 				}
-				printf(
-						"Demasiados intentos fallidos. Inicio de sesión cancelado");
-				fclose(fichero);
 			}
+			fclose(fichero);
 
-}
+		}
+		if (*resultado == 0) {
+			printf("Introduce tu usuario (%d intentos restantes): ", *intentos);
+			fflush(stdout);
+			fflush(stdin);
+			gets(usuario);
 
-	printf("Demasiados intentos fallados");
-	fflush(stdout);
-	fclose(fichero);
+		} else if (*resultado == 1) {
+			printf("Introduce tu contrase�a (%d intentos restantes): ",
+					*intentos);
+			fflush(stdout);
+			fflush(stdin);
+			gets(contrasenia);
+		}
+
 	}
+
 }
+
 
 void agregarLibro(Admin *admin, ListaLibros *listaLibros) {
 	Libro libro = pedirDatosLibro();

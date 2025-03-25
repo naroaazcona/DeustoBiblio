@@ -43,8 +43,16 @@ void visualizarLibro(Libro l){
 
 }
 
-void marcarLibroComoNoDispo(Libro *l){
-	l->disponibilidad = 0;
+void marcarLibroComoNoDispo(ListaLibros *lista, char *isbn){
+	//l->disponibilidad = 0;
+	int pos = buscarLibro(*lista, isbn);
+		if(pos != -1){
+			lista->aLibros[pos].disponibilidad = 0;
+			printf("Libro con ISBN %s ha sido marcado como que no esta disponible ahora\n", isbn);
+			fflush(stdout);
+		}else {
+			printf("Libro no encontrado\n");
+		}
 }
 
 
