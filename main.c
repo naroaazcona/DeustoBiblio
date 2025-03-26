@@ -12,8 +12,12 @@ int main(){
 	Admin admin;
 	ListaLibros listaLibros;
 	Libro libro;
+	Config conf;
+
+	conf = leerConfiguracion("config.properties");
 
 	do{
+
 		opcion = menuPrincipal();
 		switch(opcion){
 			case '1':
