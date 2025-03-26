@@ -4,6 +4,7 @@
 #include "domain/cliente.h"
 #include "domain/administrador.h"
 #include "domain/libro.h"
+#include "config.h"
 
 int main(){
 	char opcion, opcionClienteInicio, opcionAdminInicio, opcionClientePrincipal, opcionAdminPrincipal, usuario[20], contrasenia[20];
@@ -12,9 +13,8 @@ int main(){
 	Admin admin;
 	ListaLibros listaLibros;
 	Libro libro;
-	Config conf;
 
-	conf = leerConfiguracion("config.properties");
+	Config conf = leerConfiguracion("config.properties");
 
 	do{
 

@@ -7,7 +7,7 @@ typedef struct{
 	char nombreBD[TAM];
 }Config;
 
-Config leerCongiguracion(char *fich);
+Config leerConfiguracion(char *fich);
 
 
 #endif

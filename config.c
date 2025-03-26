@@ -1,9 +1,11 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include "sqlite3.h"
 
 Config leerConfiguracion(char *fich){
-	Config c;
+	Config conf;
 	FILE *pf;
 	char linea[100], clave[TAM], valor[TAM];
 
@@ -11,14 +13,14 @@ Config leerConfiguracion(char *fich){
 	if(pf != (FILE*)NULL){
 		while(fgets(linea, 100, pf) != NULL){
 			sscanf(linea, "%s = %s", clave, valor);
-			if (strcmp(clave, "puerto", 6) == 0){
-				c.puerto = atoi(valor);
+			if (strncmp(clave, "puerto", 6) == 0){
+				conf.puerto = atoi(valor);
 			}else if(strncmp(clave, "nombreBD", 8) == 0){
-				strcpy(c.nombreBD, valor);
+				strcpy(conf.nombreBD, valor);
 			}
 		}
 		fclose(pf);
 	}
-	return c;
+	return conf;
 }
 
