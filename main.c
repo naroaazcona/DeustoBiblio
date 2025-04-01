@@ -5,6 +5,7 @@
 #include "domain/administrador.h"
 #include "domain/libro.h"
 #include "config.h"
+#include "logger.h"
 
 int main(){
 	char opcion, opcionClienteInicio, opcionAdminInicio, opcionClientePrincipal, opcionAdminPrincipal, usuario[20], contrasenia[20];
@@ -15,6 +16,11 @@ int main(){
 	Libro libro;
 
 	Config conf = leerConfiguracion("config.properties");
+	//printf("\033[1;35mEste texto es magenta\033[0m\n");   --> magenta
+	//printf("\033[3;35mEste texto es magenta y cursivo\033[0m\n"); --> magenta y cursiva
+	escribirLog("\033[3;35mConfiguración leída correctamente.\033[0m\n");
+	insertarLog("Configuración leída correctamente.");
+
 
 	do{
 
@@ -29,10 +35,14 @@ int main(){
 						if (resultado != 2) {
 							printf("Se te han acabado los intentos\n");
 							fflush(stdout);
+							escribirLog("Inicio de sesión fallida.");
+							insertarLog("Inicio de sesión fallida.");
 							break;
 						} else {
 							printf("Ongi etorri!!!\n");
 							fflush(stdout);
+							escribirLog("Sesión iniciada por el Administrador.");
+							insertarLog("Sesión iniciada por el Administrador.");
 						}
 						do{
 							opcionAdminPrincipal = menuPrincipalAdministrador();
@@ -74,6 +84,8 @@ int main(){
 					default:
 						printf("Error! La opción seleccionada no es correcta\n");
 						fflush(stdout);
+						escribirLog("La opción escogida no es correcta."); //????
+						insertarLog("La opción escogida no es correcta."); //????
 					}
 				}while(opcionAdminInicio != '0');
 					break;
@@ -83,6 +95,8 @@ int main(){
 					switch(opcionClienteInicio){
 						case '1':
 							iniciarSesionCliente(&c, c.email, c.contrasenia);
+							// ???? escribirLog("El cliente: %s.");
+							insertarLog("Sesión iniciada por el Administrador.");
 							do{
 								opcionClientePrincipal = menuPrincipalCliente();
 								switch(opcionClientePrincipal){
@@ -139,6 +153,8 @@ int main(){
 			case '0':
 				printf("Hasta pronto!!\n");
 				fflush(stdout);
+				escribirLog("Cliente .... ha cerrado sesión.");
+				insertarLog("Cliente .... ha cerrado sesión.");
 				break;
 			default:
 				printf("Opción invalida. Por favor, ingrese una opción válida.\n");
