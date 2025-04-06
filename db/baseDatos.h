@@ -7,6 +7,7 @@
 #include "sqlite3.h"
 #include "../Domain/libro.h"
 #include "../Domain/cliente.h"
+#include "../Domain/administrador.h"
 
 sqlite3* conectarDB();
 
@@ -21,5 +22,6 @@ void volcarBBDDClienteAFichero(char *nomfich, sqlite3 *db);
 
 void alquilarLibroBBDD(sqlite3 *db, char *dniUsuario);
 void devolverLibroBBDD(sqlite3 *db, char *dniUsuario);
+void agregarLibroBD(sqlite3 *db, Admin *admin, ListaLibros *listaLibros);
 
 #endif /* BD_BASEDATOS_H_ */

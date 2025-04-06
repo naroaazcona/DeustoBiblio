@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "sqlite3.h"
+#include "db/sqlite3.h"
 
 Config leerConfiguracion(char *fich){
 	Config conf;

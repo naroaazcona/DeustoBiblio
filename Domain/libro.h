@@ -1,6 +1,10 @@
 #ifndef DOMAIN_LIBRO_H_
 #define DOMAIN_LIBRO_H_
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 typedef struct{
 	char ISBN[10];
 	char titulo[50];
@@ -15,16 +19,17 @@ typedef struct{
 	int numeroLibros;
 }ListaLibros;
 
+void inicializarListaLibros(ListaLibros *ll);
 Libro pedirDatosLibro();
 void visualizarTitulosLibro();
 void visualizarLibro(Libro l);
 //void marcarLibroComoNoDispo(Libro *l);
 void marcarLibroComoNoDispo(ListaLibros *lista, char *isbn);
-void aniadirLibro(ListaLibros *listaLibros, Libro libro);
 void eliminarLibro(ListaLibros *listaLibro, Libro libro);
 int buscarLibro(ListaLibros listaLibros, char *isbn);
 void visualizarListaLibros(ListaLibros listaLibros);
-int alquilarLibro(ListaLibros *ll, char *isbn);
-int devolverLibro(ListaLibros *ll, char *isbn);
+
+int cargarLibrosDesdeFichero(ListaLibros *ll);
+
 
 #endif /* DOMAIN_LIBRO_H_ */

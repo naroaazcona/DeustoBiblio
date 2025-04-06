@@ -1,3 +1,23 @@
 Sun Mar 30 21:39:01 2025
  - [3;35mConfiguración leída correctamente.[0m
 
+Sun Apr 06 19:08:29 2025
+ - [3;35mConfiguración leída correctamente.[0m
+
+Sun Apr 06 19:09:28 2025
+ - Sesión iniciada por el Administrador.
+Sun Apr 06 19:09:36 2025
+ - Cliente .... ha cerrado sesión.
+Sun Apr 06 19:10:26 2025
+ - [3;35mConfiguración leída correctamente.[0m
+
+Sun Apr 06 19:10:54 2025
+ - Sesión iniciada por el Administrador.
+Sun Apr 06 19:11:05 2025
+ - Cliente .... ha cerrado sesión.
+Sun Apr 06 19:15:15 2025
+ - [3;35mConfiguración leída correctamente.[0m
+
+Sun Apr 06 19:20:47 2025
+ - [3;35mConfiguración leída correctamente.[0m
+

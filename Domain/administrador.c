@@ -52,48 +52,6 @@ void iniciarSesion(char *usuario, char *contrasenia, int *resultado,
 
 }
 
-
-void agregarLibro(Admin *admin, ListaLibros *listaLibros) {
-	Libro libro = pedirDatosLibro();
-	int i = 0;
-
-	FILE *ficheroLibros = fopen("libros.txt", "r");
-
-	if (ficheroLibros == NULL) {
-		printf("No se ha podido abrir el fichero de los libros");
-		fflush(stdout);
-		return;
-	} else {
-		fprintf(ficheroLibros, "%s;%s;%d;%s;%s;%d\n", libro.ISBN, libro.titulo,
-				libro.anioPubli, libro.autor, libro.genero,
-				libro.disponibilidad);
-		if (listaLibros->aLibros == NULL) {
-			printf("ENTRO");
-			listaLibros->aLibros = (Libro*) malloc(sizeof(Libro));
-		} else {
-			Libro *aux = (Libro*) malloc(
-					listaLibros->numeroLibros * sizeof(Libro));
-			for (i = 0; i < listaLibros->numeroLibros; i++) {
-				aux[i] = listaLibros->aLibros[i];
-			}
-			free(listaLibros->aLibros);
-
-			listaLibros->aLibros = (Libro*) malloc(
-					(listaLibros->numeroLibros + 1) * sizeof(Libro));
-			for (i = 0; i < listaLibros->numeroLibros; i++) {
-				listaLibros->aLibros[i] = aux[i];
-			}
-			free(aux);
-		}
-
-		listaLibros->aLibros[listaLibros->numeroLibros] = libro;
-		listaLibros->numeroLibros++;
-	}
-
-	fclose(ficheroLibros);
-	printf("Libro añadido correctamente y añadido al fichero.\n");
-	fflush(stdout);
-}
 void eliminarLibroAdmin(Admin *admin, ListaLibros *listaLibros, char *isbn) {
 	int pos = buscarLibro(*listaLibros, isbn);
 	int i;
@@ -130,4 +88,24 @@ void verLibrosAdmin(ListaLibros listaLibros){
 	}
 }
 
+
+void visualizarClientes(ListaClientes clientes) {
+	int i;
+
+	if(clientes.numeroClientes == 0){
+		printf("No hay clientes");
+		fflush(stdout);
+	}
+
+    printf("\033[1;33m%10s|%20s|%20s|%30s|%20s|%30s|%20s\n\033[0m", "DNI", "NOMBRE", "APELLIDO", "EMAIL",
+			"NÚMERO TELÉFONO", "DIRECCIÓN", "LIBROS RESERVADOS");
+	printf("\033[1;33m----------------------------------------------------------------------------------------------------------------------------------------------------------\n\033[0m");
+    fflush(stdout);
+
+    for (i = 0; i < clientes.numeroClientes; i++) {
+        printf("\033[1;33m%10s|%20s|%20s|%30s|%20s|%30s|%17d\n\033[0m",
+                clientes.aClientes[i].dni, clientes.aClientes[i].nombre, clientes.aClientes[i].apellido, clientes.aClientes[i].email,
+				clientes.aClientes[i].numeroTlf, clientes.aClientes[i].direccion, clientes.aClientes[i].numerosLReservados);
+    }
+}
 

@@ -2,7 +2,7 @@
 
 sqlite3* conectarDB() {
 	sqlite3 *db;
-	int resultado = sqlite3_open("bd/bd.sqlite", &db);
+	int resultado = sqlite3_open("db/bd.sqlite", &db);
 	if (resultado != SQLITE_OK) {
 		printf("Error en la apertura de la base de datos\n");
 		fflush(stdout);
@@ -367,7 +367,6 @@ void devolverLibroBBDD(sqlite3 *db, char *dniUsuario) {
 	}
 	sqlite3_finalize(stmt);
 
-	//NO ME HA SALTADO ESTO
 	if (!encontrado) {
 		printf("\033[1;31mNo tienes ninguna reserva activa para el libro '%s'.\033[0m\n\n",
 				titulo);
@@ -382,7 +381,6 @@ void devolverLibroBBDD(sqlite3 *db, char *dniUsuario) {
 	}
 	sqlite3_finalize(stmt);
 
-	//ESTO NO ME LO HACE
 	char *eliminarReserva = "DELETE FROM Reserva WHERE ISBN = ? AND DNI = ?";
 	if (sqlite3_prepare_v2(db, eliminarReserva, -1, &stmt, NULL) == SQLITE_OK) {
 		sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
@@ -399,6 +397,49 @@ void devolverLibroBBDD(sqlite3 *db, char *dniUsuario) {
 	sqlite3_finalize(stmt);
 
 	printf("\033[1;32mLibro '%s' devuelto correctamente.\033[0m\n\n", titulo);
+
+}
+
+void agregarLibroBD(sqlite3 *db, Admin *admin, ListaLibros *listaLibros) {
+	sqlite3_stmt *stmt;
+	Libro libro = pedirDatosLibro();
+
+	char *insert ="INSERT INTO Libro (ISBN, Titulo, \"Año\", Autor, Genero, Disponibilidad) VALUES (?, ?, ?, ?, ?, ?)";
+
+	if (sqlite3_prepare_v2(db, insert, -1, &stmt, NULL) == SQLITE_OK) {
+		sqlite3_bind_text(stmt, 1, libro.ISBN, -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 2, libro.titulo, -1, SQLITE_STATIC);
+		sqlite3_bind_int(stmt, 3, libro.anioPubli);
+		sqlite3_bind_text(stmt, 4, libro.autor, -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 5, libro.genero, -1, SQLITE_STATIC);
+		sqlite3_bind_int(stmt, 6, libro.disponibilidad);
+		printf("GUARDO EL LIBRO\n");
+	}
+
+	if (sqlite3_step(stmt) != SQLITE_DONE) {
+		printf("Error al insertar el libro en la base de datos: %s\n",
+				sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return;
+	}
+
+	sqlite3_finalize(stmt);
+
+	if (listaLibros->aLibros == NULL) {
+		listaLibros->aLibros = (Libro*) malloc(sizeof(Libro));
+	} else {
+		Libro *temp = realloc(listaLibros->aLibros,
+				(listaLibros->numeroLibros + 1) * sizeof(Libro));
+		if (temp == NULL) {
+			printf("Error al reservar memoria para el nuevo libro\n");
+			return;
+		}
+
+		listaLibros->aLibros = temp;
+		listaLibros->aLibros[listaLibros->numeroLibros++] = libro;
+	}
+	printf("\033[1;32mLibro añadido correctamente a la BASE DE DATOS y añadido al fichero.\033[0m\n");
 
 }
 
