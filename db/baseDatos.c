@@ -443,3 +443,148 @@ void agregarLibroBD(sqlite3 *db, Admin *admin, ListaLibros *listaLibros) {
 
 }
 
+
+int existeCliente(sqlite3 *db, const char *dni) {
+    sqlite3_stmt *stmt;
+    const char *sql = "SELECT 1 FROM Cliente WHERE DNI = ?";
+    int existe = 0;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, dni, -1, SQLITE_STATIC);
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            existe = 1;
+        }
+    } else {
+        fprintf(stderr, "Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
+    }
+
+    sqlite3_finalize(stmt);
+    return existe;
+}
+
+
+void registrarBD(sqlite3 *db){
+	Cliente nuevoCliente;
+
+	printf("Introduce DNI: ");
+	fflush(stdout);
+	fflush(stdin);
+	gets(nuevoCliente.dni);
+
+	if (existeCliente(db, nuevoCliente.dni)) {
+        printf("\033[1;32m El usuario con DNI %s ya está registrado.\033[0m\n", nuevoCliente.dni);
+		return;
+	}
+
+	printf("Introduce nombre: ");
+	fflush(stdout);
+	gets(nuevoCliente.nombre);
+
+	printf("Introduce apellido: ");
+	fflush(stdout);
+	gets(nuevoCliente.apellido);
+
+	printf("Introduce email: ");
+	fflush(stdout);
+	gets(nuevoCliente.email);
+
+	printf("Introduce contraseña: ");
+	fflush(stdout);
+	gets(nuevoCliente.contrasenia);
+
+	printf("Introduce número de teléfono: ");
+	fflush(stdout);
+	gets(nuevoCliente.numeroTlf);
+
+	printf("Introduce dirección: ");
+	fflush(stdout);
+	gets(nuevoCliente.direccion);
+
+	nuevoCliente.numerosLReservados = 0;
+
+    sqlite3_stmt *stmt;
+    const char *insertCliente = "INSERT INTO Cliente (DNI, Nombre, Apellido, Email, Contraseña, NumeroTlf, Direccion, LibrosReservados) "
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+    if (sqlite3_prepare_v2(db, insertCliente, -1, &stmt, NULL) == SQLITE_OK) {
+		sqlite3_bind_text(stmt, 1, nuevoCliente.dni, -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 2, nuevoCliente.nombre, -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 3, nuevoCliente.apellido, -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 4, nuevoCliente.email, -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 5, nuevoCliente.contrasenia, -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 6, nuevoCliente.numeroTlf, -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 7, nuevoCliente.direccion, -1, SQLITE_STATIC);
+		sqlite3_bind_int(stmt, 8, nuevoCliente.numerosLReservados);
+
+		if (sqlite3_step(stmt) == SQLITE_DONE) {
+			printf("\033[1;32m Registro completado correctamente.\033[0m\n");
+		} else {
+			printf("\033[1;31m Error al registrar el cliente: %s\033[0m\n", sqlite3_errmsg(db));
+		}
+	} else {
+		fprintf(stderr, "Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
+	}
+
+	sqlite3_finalize(stmt);
+}
+
+
+void visualizarLibrosBBDD(sqlite3 *db) {
+    sqlite3_stmt *stmt;
+    const char *sql = "SELECT ISBN, Titulo, Año, Autor, Genero, Disponibilidad FROM Libro";
+
+    int result = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
+    if (result != SQLITE_OK) {
+        fprintf(stderr, "Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
+        return;
+    }
+    printf("LISTA DE LIBROS\n");
+
+    printf("\033[1;33m%-15s|%-50s|%-6s|%-30s|%-20s|%-15s\033[0m\n",
+           "ISBN", "TITULO", "AÑO", "AUTOR", "GENERO", "DISPONIBILIDAD");
+
+    int count = 0;
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        const char *isbn = (const char*)sqlite3_column_text(stmt, 0);
+        const char *titulo = (const char*)sqlite3_column_text(stmt, 1);
+        int anioPubli = sqlite3_column_int(stmt, 2);
+        const char *autor = (const char*)sqlite3_column_text(stmt, 3);
+        const char *genero = (const char*)sqlite3_column_text(stmt, 4);
+        int disponibilidad = sqlite3_column_int(stmt, 5);
+
+        printf("\033[0m%-15s|%-50s|%-6d|%-30s|%-20s|%-15s\033[0m\n",
+               isbn, titulo, anioPubli, autor, genero, disponibilidad ? "Disponible" : "No disponible");
+
+        count++;
+    }
+
+    if (count == 0) {
+        printf("\033[1;31m No hay libros registrados en la base de datos.\033[0m\n");
+    } else {
+        printf("\nTotal de libros: %d\n", count);
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+void marcarLibroComoNoDisponibleBD(sqlite3 *db, const char *isbn) {
+    sqlite3_stmt *stmt;
+    const char *updateDispoLibro = "UPDATE Libro SET Disponible = 0 WHERE ISBN = ?";
+
+    if (sqlite3_prepare_v2(db, updateDispoLibro, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
+
+        if (sqlite3_step(stmt) == SQLITE_DONE) {
+            printf("\033[1;32m El libro con ISBN %s ha sido marcado como NO disponible.\033[0m\n", isbn);
+        } else {
+            printf("\033[1;31m Error al actualizar el estado del libro: %s\033[0m\n", sqlite3_errmsg(db));
+        }
+    } else {
+        fprintf(stderr, "Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+

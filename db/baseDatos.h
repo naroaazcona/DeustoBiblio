@@ -24,4 +24,9 @@ void alquilarLibroBBDD(sqlite3 *db, char *dniUsuario);
 void devolverLibroBBDD(sqlite3 *db, char *dniUsuario);
 void agregarLibroBD(sqlite3 *db, Admin *admin, ListaLibros *listaLibros);
 
+void visualizarLibrosBBDD(sqlite3 *db);
+void registrarBD(sqlite3 *db);
+int existeCliente(sqlite3 *db, const char *dni);
+void marcarLibroComoNoDisponibleBD(sqlite3 *db, const char *isbn);
+
 #endif /* BD_BASEDATOS_H_ */

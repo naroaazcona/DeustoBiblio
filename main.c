@@ -24,10 +24,8 @@ int main() {
 	int encontrado;
 
 	Config conf = leerConfiguracion("config.properties");
-	//printf("\033[1;35mEste texto es magenta\033[0m\n");   --> magenta
-	//printf("\033[3;35mEste texto es magenta y cursivo\033[0m\n"); --> magenta y cursiva
-	escribirLog("\033[3;35mConfiguración leída correctamente.\033[0m\n");
-	insertarLog("Configuración leída correctamente.");
+	escribirLog("Configuración leída correctamente.");
+	insertarLog("\033[3;35m Configuración leída correctamente.\033[0m\n");
 
 	inicializarListaClientes(&listaClientes);
 	inicializarListaLibros(&listaLibros);
@@ -55,19 +53,20 @@ int main() {
 						printf("Se te han acabado los intentos\n");
 						fflush(stdout);
 						escribirLog("Inicio de sesión fallida.");
-						insertarLog("Inicio de sesión fallida.");
+						insertarLog("\033[3;35m Inicio de sesión fallida.\033[0m\n");
 						break;
 					} else {
 						printf("Ongi etorri!!!\n");
 						fflush(stdout);
 						escribirLog("Sesión iniciada por el Administrador.");
-						insertarLog("Sesión iniciada por el Administrador.");
+						insertarLog("\033[3;35m Sesión iniciada por el Administrador.\033[0m\n");
+
 					}
 					do {
 						opcionAdminPrincipal = menuPrincipalAdministrador();
 						switch (opcionAdminPrincipal) {
 						case '1':
-							printf("Eliminal libro\n");
+							printf("Eliminar libro\n");
 							fflush(stdout);
 							eliminarLibroAdmin(&admin, &listaLibros,
 									libro.ISBN);
@@ -91,8 +90,7 @@ int main() {
 							printf("Volviendo al menu principal...\n");
 							break;
 						default:
-							printf(
-									"Error! La opción seleccionada no es correcta\n");
+							printf("Error! La opción seleccionada no es correcta\n");
 							fflush(stdout);
 						}
 
@@ -105,8 +103,8 @@ int main() {
 				default:
 					printf("Error! La opción seleccionada no es correcta\n");
 					fflush(stdout);
-					escribirLog("La opción escogida no es correcta."); //????
-					insertarLog("La opción escogida no es correcta."); //????
+					escribirLog("Opción escogida NO correcta.");
+					insertarLog("\033[3;35m Opción escogida NO correcta.\033[0m\n");
 				}
 			} while (opcionAdminInicio != '0');
 			break;
@@ -116,8 +114,8 @@ int main() {
 				switch (opcionClienteInicio) {
 				case '1':
 					iniciarSesionCliente(&c, &encontrado);
-					// ???? escribirLog("El cliente: %s.");
-					insertarLog("Sesión iniciada por el Administrador.");
+					escribirLog("Sesión iniciada por el Cliente.");
+					insertarLog("\033[3;35m Sesión iniciada por el Cliente.\033[0m\n");
 					if (encontrado) {
 						do {
 							opcionClientePrincipal = menuPrincipalCliente();
@@ -130,7 +128,7 @@ int main() {
 							case '2':
 								printf("Ver libros disponibles\n");
 								fflush(stdout);
-								visualizarLibros(listaLibros);
+								visualizarLibrosBBDD(db);
 								break;
 							case '3':
 								printf("Reservar libros\n");
@@ -151,8 +149,7 @@ int main() {
 								printf("Volviendo al menu principal...\n");
 								break;
 							default:
-								printf(
-										"Error! La opción seleccionada no es correcta\n");
+								printf("Error! La opción seleccionada no es correcta\n");
 								fflush(stdout);
 							}
 
@@ -160,15 +157,14 @@ int main() {
 					}
 					break;
 				case '2':
-					registrar();
+					registrarBD(db);
 					break;
 				case '0':
 					printf("Volviendo al menú principal...\n\n");
 					fflush(stdout);
 					break;
 				default:
-					printf(
-							"Opción invalida. Por favor, ingrese una opción válida.\n");
+					printf("Opción invalida. Por favor, ingrese una opción válida.\n");
 					fflush(stdout);
 				}
 
@@ -178,8 +174,8 @@ int main() {
 		case '0':
 			printf("Hasta pronto!!\n");
 			fflush(stdout);
-			escribirLog("Cliente .... ha cerrado sesión.");
-			insertarLog("Cliente .... ha cerrado sesión.");
+			escribirLog("Se ha cerrado sesión.");
+			insertarLog("\033[3;35m Se ha cerrado sesión.\033[0m\n");
 			break;
 		default:
 			printf("Opción invalida. Por favor, ingrese una opción válida.\n");
@@ -190,10 +186,10 @@ int main() {
 	volcarBBDDLibroAFichero(FICHERO_LIBROS, db);
 
 	if (sqlite3_close(db) == SQLITE_OK) {
-		printf("\033[1;32mBBDD cerrada correctamente.\033[0m\n");
+		printf("\033[1;32m BBDD cerrada correctamente.\033[0m\n");
 		fflush(stdout);
 	} else {
-		printf("\033[1;32mBBDD no se ha cerrado bien.\033[0m\n");
+		printf("\033[1;32m BBDD no se ha cerrado bien.\033[0m\n");
 		fflush(stdout);
 	}
 
