@@ -36,71 +36,10 @@ Libro pedirDatosLibro() {
 }
 
 void visualizarTitulosLibro() {
-	printf("%30s%30s%20s%40s%20s%20s\n", "ISBN", "TÍTULO", "AÑO PUBLICACIÓN",
+	printf("\033[1;33m%30s|%30s|%20s|%40s|%20s|%20s\n\033[0m", "ISBN", "TÍTULO", "AÑO PUBLICACIÓN",
 			"AUTOR", "GÉNERO", "DISPONIBILIDAD");
 	fflush(stdout);
 
-}
-
-void visualizarLibro(Libro l) {
-	printf("%30s%30s%20d%40s%20s%20d\n", l.ISBN, l.titulo, l.anioPubli, l.autor,
-			l.genero, l.disponibilidad);
-	fflush(stdout);
-
-}
-
-void marcarLibroComoNoDispo(ListaLibros *lista, char *isbn) {
-	//l->disponibilidad = 0;
-	int pos = buscarLibro(*lista, isbn);
-	if (pos != -1) {
-		lista->aLibros[pos].disponibilidad = 0;
-		printf(
-				"Libro con ISBN %s ha sido marcado como que no esta disponible ahora\n",
-				isbn);
-		fflush(stdout);
-	} else {
-		printf("Libro no encontrado\n");
-	}
-}
-
-void eliminarLibro(ListaLibros *listaLibro, Libro libro) {
-	int i;
-	int pos = buscarLibro(*listaLibro, libro.ISBN);
-	if (pos == -1) {
-		printf(
-				"No se ha eliminado el libro porque no existe en la biblioteca\n");
-	} else {
-		for (i = pos; i < listaLibro->numeroLibros - 1; i++) {
-			listaLibro->aLibros[i] = listaLibro->aLibros[i + 1];
-		}
-		listaLibro->numeroLibros--;
-	}
-
-}
-
-int buscarLibro(ListaLibros ll, char *isbn) {
-	int pos = 0, enc = 0;
-	while (!enc && pos < ll.numeroLibros) {
-		if (strcmp(ll.aLibros[pos].ISBN, isbn) == 0) {
-			enc = 1;
-		} else {
-			pos++;
-		}
-	}
-	if (enc == 1) {
-		return pos;
-	} else {
-		return -1;
-	}
-
-}
-
-void visualizarLibros(ListaLibros ll) {
-	int i;
-	visualizarTitulosLibro();
-	for (i = 0; i < ll.numeroLibros; i++) {
-		visualizarLibro(ll.aLibros[i]);
-	}
 }
 
 int cargarLibrosDesdeFichero(ListaLibros *ll) {

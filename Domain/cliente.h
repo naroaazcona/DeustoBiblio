@@ -25,12 +25,6 @@ typedef struct{
 }ListaClientes;
 
 void inicializarListaClientes(ListaClientes *ll);
-int telefonoValido(char *telefono);
-int dniValido(char *dni);
-void registrar();
-void iniciarSesionCliente(Cliente *cliente, int *encontrado);
-int buscarLibroCliente(Cliente c, char *isbn);
-void verLibrosReservados(Cliente c);
 void visualizarTitulosPerfil();
 void verPerfil(Cliente c);
 int cargarClientesFicheroEnLista(ListaClientes *listaClientes);

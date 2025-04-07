@@ -1,1 +1,22 @@
-12345678L;1;1;1;1;1;x��v�@�v"I;0
+12345678L;1;1;1;1;1;1;0
+30637030H;Susana;Perez;s.p@gmail.com;2;123456789;1;0
+47182930K;Carlos;Ramírez;c.ramirez@gmail.com;abc123;612345678;Calle Mayor 45;0
+38192047T;Laura;González;laura.gnz@hotmail.com;pass456;699123456;Avenida del Sol 10;0
+50938475M;Jorge;Santos;jorge.s@outlook.com;js2025;677889900;Calle Luna 8;0
+62038491D;Marta;López;marta.lopez@gmail.com;mLopez2024;634778899;Calle Real 23;0
+79028345Y;Andrés;Martín;andres.martin@yahoo.com;amartin;622334455;Plaza del Carmen 12;0
+48293057Z;Lucía;Torres;lucia.t@gmail.com;lucy1234;688223344;Calle Olmo 3;0
+53019283Q;Raúl;Navarro;raul.nav@gmail.com;raulpass;611998877;Avenida Norte 7;0
+39847102X;Patricia;Ruiz;patruiz@live.com;pat2023;644556677;Calle Sur 14;0
+64729184S;Iván;Delgado;ivan.d@hotmail.com;idelgado;655443322;Calle Cedro 18;0
+31029475J;Clara;Vega;clara.v@gmail.com;clarita;698112233;Camino Verde 5;0
+21839475L;Elena;Muñoz;elena.mz@gmail.com;elena2023;611445566;Paseo del Prado 12;0
+38472618P;Sergio;Gil;sergio.gil@hotmail.com;sergiogil1;698776655;Calle Encina 27;0
+47283910R;Nuria;Herrera;n.herrera@yahoo.com;nuriaH23;677112233;Camino del Río 16;0
+58019283N;David;Moreno;d.moreno@gmail.com;davidm23;622554433;Avenida de la Paz 9;0
+69038472F;Luciano;Pérez;luciano.p@gmail.com;luperez;633112299;Calle Nueva 33;0
+79438201V;Raquel;Ibáñez;raquel.i@hotmail.com;raqui456;699001122;Paseo del Mar 1;0
+31928475C;Mario;Blanco;m.blanco@live.com;mariob123;612223344;Calle Mayor 99;0
+41029483U;Sofía;Martínez;sofia.mtz@gmail.com;sofiaMTZ;688334455;Camino Viejo 21;0
+52387109E;Alejandro;Sáez;ale.s@hotmail.com;as123456;644665577;Avenida del Bosque 7;0
+67392018B;Isabel;Navas;isabel.navas@gmail.com;isabeln2024;655778899;Calle Sauce 6;0

@@ -24,6 +24,11 @@ void alquilarLibroBBDD(sqlite3 *db, char *dniUsuario);
 void devolverLibroBBDD(sqlite3 *db, char *dniUsuario);
 void agregarLibroBD(sqlite3 *db, Admin *admin, ListaLibros *listaLibros);
 
+void verLibrosReservadosBBDD(sqlite3 *db, char *dniUsuario);
+void iniciarSesionClienteBD(sqlite3 *db, Cliente *cliente, int *enc);
+void eliminarLibroBD(sqlite3 *db, ListaLibros *listaLibros);
+
+
 void visualizarLibrosBBDD(sqlite3 *db);
 void registrarBD(sqlite3 *db);
 int existeCliente(sqlite3 *db, const char *dni);

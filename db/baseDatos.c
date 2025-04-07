@@ -6,8 +6,6 @@ sqlite3* conectarDB() {
 	if (resultado != SQLITE_OK) {
 		printf("Error en la apertura de la base de datos\n");
 		fflush(stdout);
-	} else {
-		printf("\033[1;32m Base de datos abierta correctamente!\033[0m\n");
 	}
 	return db;
 }
@@ -67,7 +65,7 @@ void volcarFicheroLibroABBDD(char *nomfich, sqlite3 *db) {
 
 	fichero = fopen(nomfich, "r");
 	if (fichero == NULL) {
-		printf("Error en la apertura del fichero\n");
+		printf("\033[0;31mError en la apertura del fichero\n\033[0m");
 		fflush(stdout);
 	}
 
@@ -75,41 +73,29 @@ void volcarFicheroLibroABBDD(char *nomfich, sqlite3 *db) {
 		char *token = strtok(linea, ";");
 		if (token) {
 			strcpy(libro.ISBN, token);
-			printf("\033[1;31m%s \033[0m", token);
-			fflush(stdout);
 		}
 
 		token = strtok(NULL, ";");
 		if (token) {
 			strcpy(libro.titulo, token);
-			printf("\033[1;31m%s \033[0m", token);
-			fflush(stdout);
 		}
 
 		token = strtok(NULL, ";");
 		if (token) {
 			libro.anioPubli = atoi(token);
-			printf("\033[1;31m%s \033[0m", token);
-			fflush(stdout);
 		}
 
 		token = strtok(NULL, ";");
 		if (token) {
 			strcpy(libro.autor, token);
-			printf("\033[1;31m%s \033[0m", token);
-			fflush(stdout);
 		}
 		token = strtok(NULL, ";");
 		if (token) {
 			strcpy(libro.genero, token);
-			printf("\033[1;31m%s \033[0m", token);
-			fflush(stdout);
 		}
 		token = strtok(NULL, ";");
 		if (token) {
 			libro.disponibilidad = atoi(token);
-			printf("\033[1;31m%s \033[0m", token);
-			fflush(stdout);
 		}
 
 		sprintf(sql, "INSERT INTO Libro VALUES('%s', '%s', %d, '%s', '%s', %d)",
@@ -121,7 +107,6 @@ void volcarFicheroLibroABBDD(char *nomfich, sqlite3 *db) {
 		sqlite3_finalize(stmt);
 	}
 	fclose(fichero);
-	printf("\033[1;32m Libros volcados a la base de datos correctamente.\033[0m\n");
 
 }
 
@@ -133,7 +118,7 @@ void volcarFicheroClienteABBDD(char *nomfich, sqlite3 *db) {
 
 	fichero = fopen(nomfich, "r");
 	if (fichero == NULL) {
-		printf("Error en la apertura del fichero\n");
+		printf("\033[0;31mError en la apertura del fichero\n\033[0m");
 		fflush(stdout);
 	}
 
@@ -141,58 +126,35 @@ void volcarFicheroClienteABBDD(char *nomfich, sqlite3 *db) {
 		char *token = strtok(linea, ";");
 		if (token) {
 			strcpy(cliente.dni, token);
-			printf("\033[1;36m %s \033[0m", token);
-			fflush(stdout);
 		}
 
 		token = strtok(NULL, ";");
 		if (token) {
 			strcpy(cliente.nombre, token);
-			printf("\033[1;36m%s \033[0m", token);
-			fflush(stdout);
-
 		}
 		token = strtok(NULL, ";");
 		if (token) {
 			strcpy(cliente.apellido, token);
-			printf("\033[1;36m%s \033[0m", token);
-			fflush(stdout);
-
 		}
 		token = strtok(NULL, ";");
 		if (token) {
 			strcpy(cliente.email, token);
-			printf("\033[1;36m%s \033[0m", token);
-			fflush(stdout);
-
 		}
 		token = strtok(NULL, ";");
 		if (token) {
 			strcpy(cliente.contrasenia, token);
-			printf("\033[1;36m%s \033[0m", token);
-			fflush(stdout);
-
 		}
 		token = strtok(NULL, ";");
 		if (token) {
 			strcpy(cliente.numeroTlf, token);
-			printf("\033[1;36m%s \033[0m", token);
-			fflush(stdout);
-
 		}
 		token = strtok(NULL, ";");
 		if (token) {
 			strcpy(cliente.direccion, token);
-			printf("\033[1;36m%s \033[0m", token);
-			fflush(stdout);
-
 		}
 		token = strtok(NULL, ";");
 		if (token) {
 			cliente.numerosLReservados = atoi(token);
-			printf("\033[1;36m%s \n\033[0m", token);
-			fflush(stdout);
-
 		}
 
 		sprintf(sql,"INSERT INTO Cliente VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
@@ -206,7 +168,6 @@ void volcarFicheroClienteABBDD(char *nomfich, sqlite3 *db) {
 	}
 
 	fclose(fichero);
-	printf("\033[1;32mClientes volcados a la base de datos correctamente.\033[0m\n");
 }
 
 void volcarBBDDLibroAFichero(char *nomfich, sqlite3 *db) {
@@ -214,7 +175,7 @@ void volcarBBDDLibroAFichero(char *nomfich, sqlite3 *db) {
 	FILE *fichero = fopen(nomfich, "w");
 
 	if (fichero == NULL) {
-		printf("No se ha podido abrir el fichero\n");
+		printf("\033[0;31mNo se ha podido abrir el fichero\n\033[0m");
 		fflush(stdout);
 		return;
 	}
@@ -232,8 +193,6 @@ void volcarBBDDLibroAFichero(char *nomfich, sqlite3 *db) {
 		sqlite3_column_text(stmt, 3), sqlite3_column_text(stmt, 4), sqlite3_column_int(stmt, 5));
 	}
 	sqlite3_finalize(stmt);
-	printf("\033[1;32mBBDD volcada correctamente al fichero.\033[0m\n");
-	fflush(stdout);
 	fclose(fichero);
 
 }
@@ -243,14 +202,14 @@ void volcarBBDDClienteAFichero(char *nomfich, sqlite3 *db) {
 	FILE *fichero = fopen(nomfich, "w");
 
 	if (fichero == NULL) {
-		printf("No se ha podido abrir el fichero\n");
+		printf("\033[0;31mNo se ha podido abrir el fichero\n\033[0m");
 		fflush(stdout);
 		return;
 	}
 
 	char *sql = "SELECT * FROM Cliente";
 	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
-		printf("Error a la hora de preparar la consulta");
+		printf("\033[0;31mError a la hora de preparar la consulta\033[0m\n");
 		fflush(stdout);
 		fclose(fichero);
 		sqlite3_finalize(stmt);
@@ -263,8 +222,6 @@ void volcarBBDDClienteAFichero(char *nomfich, sqlite3 *db) {
 	}
 
 	sqlite3_finalize(stmt);
-	printf("\033[1;32mBBDD volcada correctamente al fichero.\033[0m\n");
-	fflush(stdout);
 	fclose(fichero);
 }
 
@@ -291,11 +248,11 @@ void alquilarLibroBBDD(sqlite3 *db, char *dniUsuario) {
 	sqlite3_finalize(stmt);
 
 	if (disponibilidad == -1) {
-		printf("Libro con título '%s' no encontrado.\n", titulo);
+		printf("\033[0;31mLibro con título '%s' no encontrado.\n\033[0m", titulo);
 		fflush(stdout);
 		return;
 	} else if (disponibilidad == 0) {
-		printf("No hay copias disponibles del libro '%s'.\n", titulo);
+		printf("\033[0;31mNo hay copias disponibles del libro '%s'.\n\033[0m", titulo);
 		fflush(stdout);
 		return;
 	}
@@ -350,7 +307,7 @@ void devolverLibroBBDD(sqlite3 *db, char *dniUsuario) {
 		if (sqlite3_step(stmt) == SQLITE_ROW) {
 			strncpy(isbn, (char*) sqlite3_column_text(stmt, 0), 10);
 		} else {
-			printf("Libro con título '%s' no encontrado.\n", titulo);
+			printf("\033[0;31mLibro con título '%s' no encontrado.\n\033[0m", titulo);
 			sqlite3_finalize(stmt);
 			return;
 		}
@@ -417,7 +374,7 @@ void agregarLibroBD(sqlite3 *db, Admin *admin, ListaLibros *listaLibros) {
 	}
 
 	if (sqlite3_step(stmt) != SQLITE_DONE) {
-		printf("Error al insertar el libro en la base de datos: %s\n",
+		printf("\033[1;31mError al insertar el libro en la base de datos: %s\n\033[0m",
 				sqlite3_errmsg(db));
 		sqlite3_finalize(stmt);
 		sqlite3_close(db);
@@ -432,7 +389,7 @@ void agregarLibroBD(sqlite3 *db, Admin *admin, ListaLibros *listaLibros) {
 		Libro *temp = realloc(listaLibros->aLibros,
 				(listaLibros->numeroLibros + 1) * sizeof(Libro));
 		if (temp == NULL) {
-			printf("Error al reservar memoria para el nuevo libro\n");
+			printf("\033[1;31mError al reservar memoria para el nuevo libro\n\033[0m");
 			return;
 		}
 
@@ -455,7 +412,7 @@ int existeCliente(sqlite3 *db, const char *dni) {
             existe = 1;
         }
     } else {
-        fprintf(stderr, "Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
+        fprintf(stderr, "\033[1;31mError al preparar la consulta: %s\n\033[0m", sqlite3_errmsg(db));
     }
 
     sqlite3_finalize(stmt);
@@ -522,7 +479,7 @@ void registrarBD(sqlite3 *db){
 			printf("\033[1;31m Error al registrar el cliente: %s\033[0m\n", sqlite3_errmsg(db));
 		}
 	} else {
-		fprintf(stderr, "Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
+		fprintf(stderr, "\033[1;31mError al preparar la consulta: %s\n\033[0m", sqlite3_errmsg(db));
 	}
 
 	sqlite3_finalize(stmt);
@@ -531,17 +488,17 @@ void registrarBD(sqlite3 *db){
 
 void visualizarLibrosBBDD(sqlite3 *db) {
     sqlite3_stmt *stmt;
-    const char *sql = "SELECT ISBN, Titulo, Año, Autor, Genero, Disponibilidad FROM Libro";
+    char *sql = "SELECT ISBN, Titulo, Año, Autor, Genero, Disponibilidad FROM Libro";
 
     int result = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
     if (result != SQLITE_OK) {
-        fprintf(stderr, "Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
+        fprintf(stderr, "\033[1;31mError al preparar la consulta: %s\n\033[0m", sqlite3_errmsg(db));
         return;
     }
-    printf("LISTA DE LIBROS\n");
 
-    printf("\033[1;33m%-15s|%-50s|%-6s|%-30s|%-20s|%-15s\033[0m\n",
-           "ISBN", "TITULO", "AÑO", "AUTOR", "GENERO", "DISPONIBILIDAD");
+    visualizarTitulosLibro();
+	printf("\033[1;33m--------------------------------------------------------------------------------------------------------------------------------------"
+			"--------------------------------\n\033[0m");
 
     int count = 0;
 
@@ -553,7 +510,7 @@ void visualizarLibrosBBDD(sqlite3 *db) {
         const char *genero = (const char*)sqlite3_column_text(stmt, 4);
         int disponibilidad = sqlite3_column_int(stmt, 5);
 
-        printf("\033[0m%-15s|%-50s|%-6d|%-30s|%-20s|%-15s\033[0m\n",
+        printf("\033[1;33m%30s|%30s|%20d|%40s|%20s|%20s\n\033[0m",
                isbn, titulo, anioPubli, autor, genero, disponibilidad ? "Disponible" : "No disponible");
 
         count++;
@@ -581,10 +538,151 @@ void marcarLibroComoNoDisponibleBD(sqlite3 *db, const char *isbn) {
             printf("\033[1;31m Error al actualizar el estado del libro: %s\033[0m\n", sqlite3_errmsg(db));
         }
     } else {
-        fprintf(stderr, "Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
+        fprintf(stderr, "\033[1;31mError al preparar la consulta: %s\n\033[0m", sqlite3_errmsg(db));
     }
 
     sqlite3_finalize(stmt);
 }
+
+void verLibrosReservadosBBDD(sqlite3 *db, char *dniUsuario) {
+	sqlite3_stmt *stmt;
+	char *select = "SELECT Libro.Titulo "
+			"FROM Reserva "
+			"JOIN Libro ON Reserva.ISBN = Libro.ISBN "
+			"WHERE Reserva.DNI = ?";
+
+	if (sqlite3_prepare_v2(db, select, -1, &stmt, NULL) == SQLITE_OK) {
+		sqlite3_bind_text(stmt, 1, dniUsuario, -1, SQLITE_STATIC);
+		int contador = 0;
+
+		printf("\033[1;33mLibros reservados por el usuario con DNI %s:\n\033[0m", dniUsuario);
+		while (sqlite3_step(stmt) == SQLITE_ROW) {
+			const unsigned char *titulo = sqlite3_column_text(stmt, 0);
+			printf("\033[1;33m- Título: %s \n\033[0m", titulo);
+			contador++;
+		}
+
+		if (contador == 0) {
+			printf("\033[1;31mNo tienes libros reservados.\n\033[0m");
+		}
+
+		sqlite3_finalize(stmt);
+	} else {
+		fprintf(stderr, "Error al preparar la consulta: %s\n",
+				sqlite3_errmsg(db));
+	}
+}
+
+void iniciarSesionClienteBD(sqlite3 *db, Cliente *cliente, int *enc) {
+	sqlite3_stmt *stmt;
+	char dni[10];
+	char contrasenia[20];
+
+	printf("Introduce tu DNI: ");
+	fflush(stdout);
+	fflush(stdin);
+	gets(dni);
+
+	printf("Introduce tu contraseña: ");
+	fflush(stdout);
+	fflush(stdin);
+	gets(contrasenia);
+
+	char *sql = "SELECT * FROM Cliente WHERE DNI = ? AND Contraseña = ?";
+	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
+		printf("Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
+		*enc = 0;
+		return;
+	}
+	sqlite3_bind_text(stmt, 1, dni, -1, SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 2, contrasenia, -1, SQLITE_STATIC);
+
+	if (sqlite3_step(stmt) == SQLITE_ROW) {
+		strcpy(cliente->dni, (const char*) sqlite3_column_text(stmt, 0));
+		strcpy(cliente->nombre, (const char*) sqlite3_column_text(stmt, 1));
+		strcpy(cliente->apellido, (const char*) sqlite3_column_text(stmt, 2));
+		strcpy(cliente->email, (const char*) sqlite3_column_text(stmt, 3));
+		strcpy(cliente->contrasenia,(const char*) sqlite3_column_text(stmt, 4));
+		strcpy(cliente->numeroTlf, (const char*) sqlite3_column_text(stmt, 5));
+		strcpy(cliente->direccion, (const char*) sqlite3_column_text(stmt, 6));
+		cliente->numerosLReservados = sqlite3_column_int(stmt, 7);
+		*enc = 1;
+		printf("\033[1;32mInicio de sesión exitoso. ¡Bienvenid@, %s %s!\033[0m\n", cliente->nombre, cliente->apellido);
+	} else {
+		printf("\033[1;31mError: DNI o contraseña incorrectos.\033[0m\n");
+		*enc = 0;
+	}
+
+	sqlite3_finalize(stmt);
+}
+
+void eliminarLibroBD(sqlite3 *db, ListaLibros *listaLibros) {
+	sqlite3_stmt *stmt;
+	int enc = -1, i;
+	char isbn[10];
+
+	printf("Introduce el ISBN del libro que deseas eliminar: ");
+	fflush(stdout);
+	fflush(stdin);
+	gets(isbn);
+
+	char *select = "SELECT COUNT(*) FROM Reserva WHERE ISBN = ?";
+	if (sqlite3_prepare_v2(db, select, -1, &stmt, NULL) != SQLITE_OK) {
+		printf("\033[1;31mError al preparar la consulta: %s\n\033[0m", sqlite3_errmsg(db));
+		return;
+	}
+
+	sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
+
+	if (sqlite3_step(stmt) == SQLITE_ROW) {
+		int reservas = sqlite3_column_int(stmt, 0);
+		if (reservas > 0) {
+			printf(
+					"\033[1;31mError: No se puede eliminar el libro porque tiene reservas activas.\033[0m\n");
+			sqlite3_finalize(stmt);
+			return;
+		}
+	}
+	sqlite3_finalize(stmt);
+
+	char *eliminar = "DELETE FROM Libro WHERE ISBN = ?";
+	if (sqlite3_prepare_v2(db, eliminar, -1, &stmt, NULL) != SQLITE_OK) {
+		printf("Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
+		return;
+	}
+
+	sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
+
+	if (sqlite3_step(stmt) != SQLITE_DONE) {
+		printf("\033[1;31mError al eliminar el libro: %s\033[0m\n",
+				sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		return;
+	}
+
+	sqlite3_finalize(stmt);
+
+	for (i = 0; i < listaLibros->numeroLibros; i++) {
+		if (strcmp(listaLibros->aLibros[i].ISBN, isbn) == 0) {
+			enc = i;
+			break;
+		}
+	}
+
+	if (enc != -1) {
+		for (i = enc; i < listaLibros->numeroLibros - 1; i++) {
+			listaLibros->aLibros[i] = listaLibros->aLibros[i + 1];
+		}
+		listaLibros->numeroLibros--;
+
+		printf("\033[1;32mLibro con ISBN %s eliminado correctamente.\033[0m\n",
+				isbn);
+	} else {
+		printf(
+				"\033[1;33mEl libro se eliminó de la base de datos pero no se encontró en la lista de memoria.\033[0m\n");
+	}
+}
+
+
 
 

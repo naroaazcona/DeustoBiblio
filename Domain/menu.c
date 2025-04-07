@@ -9,7 +9,7 @@ char menuPrincipal(){
 	printf("1. Administrador\n");
 	printf("2. Cliente\n");
 	printf("0. Salir\n");
-	printf("Elige una opción: ");
+	printf("\033[1;36mElige una opción: \033[0m");
 	fflush(stdout);
 
 	fflush(stdin);
@@ -21,11 +21,11 @@ char menuPrincipal(){
 char menuClienteInicio(){
 	char opcion;
 
-	printf("Menu Inicio de Sesión de Cliente\n");
+	printf("\033[1;36mMenu Inicio de Sesión de Cliente\n\033[0m");
 	printf("1. Iniciar Sesión\n");
 	printf("2. Registrarse\n");
 	printf("0. Salir\n");
-	printf("Elige una opción: ");
+	printf("\033[1;36mElige una opción: \033[0m");
 	fflush(stdout);
 
 	fflush(stdin);
@@ -39,14 +39,14 @@ char menuClienteInicio(){
 char menuPrincipalCliente(){
 	char opcion;
 
-	printf("Menu Principal del Cliente\n");
+	printf("\033[1;36mMenu Principal del Cliente\n\033[0m");
 	printf("1. Ver Perfil\n");
 	printf("2. Ver libros disponibles\n");
 	printf("3. Reservar libros\n");
 	printf("4. Devolver libros\n");
 	printf("5. Libros Reservados\n");
 	printf("0. Salir\n");
-	printf("Elige una opción: ");
+	printf("\033[1;36mElige una opción: \033[0m");
 	fflush(stdout);
 
 	fflush(stdin);
@@ -58,10 +58,10 @@ char menuPrincipalCliente(){
 char menuAdministradorInicio(){
 	char opcion;
 
-	printf("Menu Inicio de Sesión del Administrador\n");
+	printf("\033[1;36mMenu Inicio de Sesión del Administrador\n\033[0m");
 	printf("1. Iniciar Sesión\n");
 	printf("0. Salir\n");
-	printf("Elige una opción: ");
+	printf("\033[1;36mElige una opción:\033[0m ");
 	fflush(stdout);
 
 	fflush(stdin);
@@ -73,13 +73,13 @@ char menuAdministradorInicio(){
 char menuPrincipalAdministrador(){
 	char opcion;
 
-	printf("Menu Principal del Administrador\n");
+	printf("\033[1;36mMenu Principal del Administrador\n\033[0m");
 	printf("1. Eliminar libro\n");
 	printf("2. Añadir libro\n");
 	printf("3. Visualizar datos de los cliente\n");
 	printf("4. Visualizar datos de los libros\n");
 	printf("0. Salir\n");
-	printf("Elige una opción: ");
+	printf("\033[1;36mElige una opción: \033[0m");
 	fflush(stdout);
 
 	fflush(stdin);

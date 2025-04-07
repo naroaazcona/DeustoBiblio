@@ -22,13 +22,6 @@ typedef struct{
 void inicializarListaLibros(ListaLibros *ll);
 Libro pedirDatosLibro();
 void visualizarTitulosLibro();
-void visualizarLibro(Libro l);
-//void marcarLibroComoNoDispo(Libro *l);
-void marcarLibroComoNoDispo(ListaLibros *lista, char *isbn);
-void eliminarLibro(ListaLibros *listaLibro, Libro libro);
-int buscarLibro(ListaLibros listaLibros, char *isbn);
-void visualizarListaLibros(ListaLibros listaLibros);
-
 int cargarLibrosDesdeFichero(ListaLibros *ll);
 
 

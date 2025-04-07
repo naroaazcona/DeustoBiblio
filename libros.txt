@@ -1,1 +1,23 @@
-1;1;1;1;1;1
+1;1;1;1;1;0
+123456789;Normal People;2023;Sally Rooney;Romance;5
+987654321;El faro de los amores dormidos;2020;Andrea Longarela;Romance;3
+132768549;El día que se perdió la cordura;2019;Javier Castillo;Thriller;6
+567852467;El día que se perdió el amor;2021;Javier Castillo;Thriller;5
+978014312;The Alchemist;1988;Paulo Coelho;Ficción;4
+978045152;1984;1949;George Orwell;Distopía;9
+978006112;To Kill a Mockingbird;1960;Harper Lee;Drama;2
+978030727;The Road;2006;Cormac McCarthy;Post-apocalíptico;3
+978843760;La casa de Bernarda Alba;1936;Federico García LorTeatro;Teatro;6
+978849838;Los juegos del hambre;2008;Suzanne Collins;Ciencia ficción;5
+978030794;The Girl on the Train;2015;Paula Hawkins;Thriller;6
+978842045;Patria;2016;Fernando Aramburu;Drama;7
+978840102;La sombra del viento;2001;Carlos Ruiz Zafón;Misterio;9
+978958888;Cien años de soledad;1967;Gabriel García MárRealismo mágico;Realismo mágico;2
+978842047;Rayuela;1963;Julio Cortázar;Ficción;5
+978849062;Todo esto te daré;2016;Dolores Redondo;Thriller;7
+978034580;Fifty Shades of Grey;2011;E. L. James;Romance;4
+978842334;Los renglones torcidos de Dios;1979;Torcuato Luca de TenMisterio;Misterio;1
+978849129;Sira;2021;María Dueñas;Histórica;7
+978842044;El principito;1943;Antoine de Saint-ExuFábula;Fábula;6
+978030774;Gone Girl;2012;Gillian Flynn;Thriller;4
+978006231;The Subtle Art of Not Giving a F*ck;2016;Mark Manson;Autoayuda;3

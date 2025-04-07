@@ -9,8 +9,6 @@ typedef struct{
 }Admin;
 
 void iniciarSesion(char *usuario, char *contrasenia, int *resultado,int *intentos);
-void agregarLibro(Admin *admin, ListaLibros *listaLibros);
-void eliminarLibroAdmin(Admin *admin, ListaLibros *listaLibros, char *isbn);
 void verLibrosAdmin(ListaLibros listaLibros);
 void visualizarClientes(ListaClientes clientes);
 
