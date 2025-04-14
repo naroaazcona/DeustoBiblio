@@ -27,3 +27,11 @@ Mon Apr 07 11:23:18 2025
  - Configuración leída correctamente.
 Mon Apr 07 11:23:43 2025
  - Sesión iniciada por el Administrador.
+Mon Apr 07 23:22:02 2025
+ - Configuración leída correctamente.
+Mon Apr 07 23:22:22 2025
+ - Sesión iniciada por el Administrador.
+Mon Apr 07 23:32:26 2025
+ - Sesión iniciada por el Cliente.
+Mon Apr 07 23:36:05 2025
+ - Sesión iniciada por el Cliente.
