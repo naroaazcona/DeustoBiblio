@@ -127,15 +127,15 @@ int main(int argc, char *argv[]) {
 			volcarFicheroClienteABBDD(FICHERO_CLIENTE, db);
 
 			do {
-
-				opcion = menuPrincipal();
+//				opcion = menuPrincipal();
 				recv(comm_socket,recvBuff,sizeof(recvBuff),0);  //recibir
 				sscanf(recvBuff,"%c",&opcion); //obtener datos
+				sprintf(sendBuff,"Servidor Recibido: %c",opcion);
 				send(comm_socket,sendBuff,sizeof(sendBuff),0);  //enviar
 				switch (opcion) {
 				case '1':
 					do {
-						opcionAdminInicio = menuAdministradorInicio();
+//						opcionAdminInicio = menuAdministradorInicio();
 						recv(comm_socket,recvBuff,sizeof(recvBuff),0);  //recibir
 						sscanf(recvBuff,"%c",&opcionAdminInicio); //obtener datos
 						send(comm_socket,sendBuff,sizeof(sendBuff),0);  //enviar
