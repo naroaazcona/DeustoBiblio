@@ -4,7 +4,7 @@
 132768549;El día que se perdió la cordura;2019;Javier Castillo;Thriller;6
 567852467;El día que se perdió el amor;2021;Javier Castillo;Thriller;5
 978014312;The Alchemist;1988;Paulo Coelho;Ficción;4
-978045152;1984;1949;George Orwell;Distopía;9
+978045152;1984;1949;George Orwell;Distopía;8
 978006112;To Kill a Mockingbird;1960;Harper Lee;Drama;2
 978030727;The Road;2006;Cormac McCarthy;Post-apocalíptico;3
 978843760;La casa de Bernarda Alba;1936;Federico García LorTeatro;Teatro;6
