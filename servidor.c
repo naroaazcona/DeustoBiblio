@@ -138,6 +138,7 @@ int main(int argc, char *argv[]) {
 //						opcionAdminInicio = menuAdministradorInicio();
 						recv(comm_socket,recvBuff,sizeof(recvBuff),0);  //recibir
 						sscanf(recvBuff,"%c",&opcionAdminInicio); //obtener datos
+						sprintf(sendBuff,"Servidor Recibido: %c",opcionAdminInicio);
 						send(comm_socket,sendBuff,sizeof(sendBuff),0);  //enviar
 
 						switch (opcionAdminInicio) {
