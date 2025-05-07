@@ -20,18 +20,5 @@
 41029483U;Sofía;Martínez;sofia.mtz@gmail.com;sofiaMTZ;688334455;Camino Viejo 21;0
 52387109E;Alejandro;Sáez;ale.s@hotmail.com;as123456;644665577;Avenida del Bosque 7;0
 67392018B;Isabel;Navas;isabel.navas@gmail.com;isabeln2024;655778899;Calle Sauce 6;0
-
-;Isabel;Navas;isabel.navas@gmail.com;isabeln2024;655778899;Calle Sauce 6;0
-Isabel;Navas;isabel.navas@gmail.cisabeln2024;isabeln2024;655778899;Calle Sauc0
-;0
-;0
-0
-;Navas;isabel.navas@gmail.cisabeln2024;isabeln2024;655778899;Calle Sauc0
-;0
-;0
 45948377M;ainara;maroto;ainara.maroto@opendeusto.es;ainaramaroto;666666666;Av. San Antonio 38 Bajo DI;1
 11111111Z;Z;Z;Z;Z;1;Z;0
-Navas;isabel.navas@gmail.cisabeln2024;isabeln2024;655778899;Calle Sauc0
-;Calle Sauc0
-;0
-;0

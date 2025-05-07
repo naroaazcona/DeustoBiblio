@@ -1,5 +1,5 @@
 /*Este va a ser el main*/
-/*#include <stdio.h>
+#include <stdio.h>
 #include "domain/menu.h"
 #include "domain/cliente.h"
 #include "domain/administrador.h"
@@ -193,4 +193,4 @@ int main() {
 
 	return 0;
 
-}*/
+}
