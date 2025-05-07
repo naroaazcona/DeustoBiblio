@@ -102,8 +102,8 @@ int main(int argc, char *argv[]) {
 		char opcion, opcionClienteInicio, opcionAdminInicio, opcionClientePrincipal,
 					opcionAdminPrincipal, usuario[20], contrasenia[20];
 //			int resultado, intentos;
-			int *intentos = 3; //???
-			int *resultado = 0; //???
+			int intentos = 3; //???
+			int resultado = 0; //???
 			Cliente c;
 			Admin admin;
 			ListaLibros listaLibros;
@@ -144,16 +144,16 @@ int main(int argc, char *argv[]) {
 						switch (opcionAdminInicio) {
 						case '1':
 //							iniciarSesion(usuario, contrasenia, &resultado, &intentos);
-							sprintf(sendBuff,"%d",*intentos); //almacena en el sendBuff
+							sprintf(sendBuff,"%d",intentos); //almacena en el sendBuff
 							send(comm_socket,sendBuff,sizeof(sendBuff),0); //envia
-							sprintf(sendBuff,"%d",*resultado);
+							sprintf(sendBuff,"%d",resultado);
 							send(comm_socket,sendBuff,sizeof(sendBuff),0);
 
 							recv(comm_socket,recvBuff,sizeof(recvBuff),0); //recibo
 							sprintf(usuario,"%s",recvBuff); //obtengo
 							recv(comm_socket,recvBuff,sizeof(recvBuff),0);
 							sprintf(contrasenia,"%s",recvBuff);
-							if (*resultado != 2) {
+							if (resultado != 2) {
 //								sprintf(sendBuff, "\033[0;31mSe te han acabado los intentos\n\033[0m");
 								sprintf(sendBuff, "Se te han acabado los intentos.");
 								send(comm_socket,sendBuff,sizeof(sendBuff),0);
