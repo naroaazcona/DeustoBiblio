@@ -29557,3 +29557,7 @@ Wed May 07 08:14:46 2025
  - Opción escogida NO correcta.
 Wed May 07 08:14:46 2025
  - Opción escogida NO correcta.
+Fri May 30 11:13:59 2025
+ - Sesión iniciada por el Cliente.
+Fri May 30 11:18:11 2025
+ - Sesión iniciada por el Cliente.
