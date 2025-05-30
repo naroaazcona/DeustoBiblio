@@ -629,73 +629,197 @@ void iniciarSesionClienteBD(sqlite3 *db, Cliente *cliente, int *enc, char *dni, 
 	sqlite3_finalize(stmt);
 }
 
-void eliminarLibroBD(sqlite3 *db, ListaLibros *listaLibros) {
-	sqlite3_stmt *stmt;
-	int enc = -1, i;
-	char isbn[10];
+void eliminarLibroBD(sqlite3 *db, ListaLibros *listaLibros, SOCKET comm_socket, char *sendBuff, int buffer_size, char *isbn_recibido) {
+    sqlite3_stmt *stmt;
+    int enc = -1, i;
+    char isbn[20];
 
-	printf("Introduce el ISBN del libro que deseas eliminar: ");
-	fflush(stdout);
-	fflush(stdin);
-	gets(isbn);
+    strcpy(isbn, isbn_recibido);
+    char *pos;
+    if ((pos = strchr(isbn, '\n')) != NULL) *pos = '\0';
+    if ((pos = strchr(isbn, '\r')) != NULL) *pos = '\0';
 
-	char *select = "SELECT COUNT(*) FROM Reserva WHERE ISBN = ?";
-	if (sqlite3_prepare_v2(db, select, -1, &stmt, NULL) != SQLITE_OK) {
-		printf("\033[1;31mError al preparar la consulta: %s\n\033[0m", sqlite3_errmsg(db));
-		return;
-	}
+    printf("Servidor - ISBN recibido: '%s'\n", isbn);
+    fflush(stdout);
 
-	sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
+    char *verificar = "SELECT COUNT(*) FROM Libro WHERE ISBN = ?";
+    if (sqlite3_prepare_v2(db, verificar, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
 
-	if (sqlite3_step(stmt) == SQLITE_ROW) {
-		int reservas = sqlite3_column_int(stmt, 0);
-		if (reservas > 0) {
-			printf(
-					"\033[1;31mError: No se puede eliminar el libro porque tiene reservas activas.\033[0m\n");
-			sqlite3_finalize(stmt);
-			return;
-		}
-	}
-	sqlite3_finalize(stmt);
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            int existe = sqlite3_column_int(stmt, 0);
+            if (existe == 0) {
+                sprintf(sendBuff, "ERROR: No se encontró ningún libro con el ISBN '%s'.", isbn);
+                send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+                sqlite3_finalize(stmt);
+                return;
+            }
+        }
+        sqlite3_finalize(stmt);
+    }
 
-	char *eliminar = "DELETE FROM Libro WHERE ISBN = ?";
-	if (sqlite3_prepare_v2(db, eliminar, -1, &stmt, NULL) != SQLITE_OK) {
-		printf("Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
-		return;
-	}
+    char *selectReservas = "SELECT COUNT(*) FROM Reserva WHERE ISBN = ?";
+    if (sqlite3_prepare_v2(db, selectReservas, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
 
-	sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            int reservas = sqlite3_column_int(stmt, 0);
+            if (reservas > 0) {
+                sprintf(sendBuff, "ERROR: No se puede eliminar el libro porque tiene %d reservas activas.", reservas);
+                send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+                sqlite3_finalize(stmt);
+                return;
+            }
+        }
+        sqlite3_finalize(stmt);
+    }
 
-	if (sqlite3_step(stmt) != SQLITE_DONE) {
-		printf("\033[1;31mError al eliminar el libro: %s\033[0m\n",
-				sqlite3_errmsg(db));
-		sqlite3_finalize(stmt);
-		return;
-	}
+    char *eliminar = "DELETE FROM Libro WHERE ISBN = ?";
+    if (sqlite3_prepare_v2(db, eliminar, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
 
-	sqlite3_finalize(stmt);
+        if (sqlite3_step(stmt) == SQLITE_DONE) {
+            int cambios = sqlite3_changes(db);
+            if (cambios > 0) {
+                for (i = 0; i < listaLibros->numeroLibros; i++) {
+                    if (strcmp(listaLibros->aLibros[i].ISBN, isbn) == 0) {
+                        enc = i;
+                        break;
+                    }
+                }
 
-	for (i = 0; i < listaLibros->numeroLibros; i++) {
-		if (strcmp(listaLibros->aLibros[i].ISBN, isbn) == 0) {
-			enc = i;
-			break;
-		}
-	}
+                if (enc != -1) {
+                    for (i = enc; i < listaLibros->numeroLibros - 1; i++) {
+                        listaLibros->aLibros[i] = listaLibros->aLibros[i + 1];
+                    }
+                    listaLibros->numeroLibros--;
+                }
 
-	if (enc != -1) {
-		for (i = enc; i < listaLibros->numeroLibros - 1; i++) {
-			listaLibros->aLibros[i] = listaLibros->aLibros[i + 1];
-		}
-		listaLibros->numeroLibros--;
+                sprintf(sendBuff, "ÉXITO: Libro con ISBN '%s' eliminado correctamente.", isbn);
+            } else {
+                sprintf(sendBuff, "ERROR: No se pudo eliminar el libro (0 filas afectadas).");
+            }
+        } else {
+            sprintf(sendBuff, "ERROR: Fallo al ejecutar la eliminación: %s", sqlite3_errmsg(db));
+        }
+        sqlite3_finalize(stmt);
+    } else {
+        sprintf(sendBuff, "ERROR: No se pudo preparar la consulta de eliminación: %s", sqlite3_errmsg(db));
+    }
 
-		printf("\033[1;32mLibro con ISBN %s eliminado correctamente.\033[0m\n",
-				isbn);
-	} else {
-		printf(
-				"\033[1;33mEl libro se eliminó de la base de datos pero no se encontró en la lista de memoria.\033[0m\n");
-	}
+    send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 }
 
+void visualizarClientesBBDD(sqlite3 *db, SOCKET comm_socket, char *sendBuff) {
+    sqlite3_stmt *stmt;
+    char *sql = "SELECT DNI, Nombre, Apellido, Email, Contraseña, NumeroTlf, Direccion, LibrosReservados FROM Cliente";
 
+    int result = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
+    if (result != SQLITE_OK) {
+        sprintf(sendBuff, "\nError al preparar la consulta: %s\n", sqlite3_errmsg(db));
+        send(comm_socket, sendBuff, strlen(sendBuff), 0);
+        sprintf(sendBuff, "END_CLIENTS");
+        send(comm_socket, sendBuff, strlen(sendBuff), 0);
+        return;
+    }
 
+    sprintf(sendBuff, "\n%-12s %-15s %-15s %-25s %-12s %-12s %-20s %-8s\n",
+            "DNI", "NOMBRE", "APELLIDO", "EMAIL", "CONTRASEÑA", "TELEFONO", "DIRECCION", "LIBROS");
+    send(comm_socket, sendBuff, strlen(sendBuff), 0);
 
+    sprintf(sendBuff, "%.80s\n", "-----------------------------------------------------------------------------");
+    send(comm_socket, sendBuff, strlen(sendBuff), 0);
+
+    int count = 0;
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        const char *dni = (const char*)sqlite3_column_text(stmt, 0);
+        const char *nombre = (const char*)sqlite3_column_text(stmt, 1);
+        const char *apellido = (const char*)sqlite3_column_text(stmt, 2);
+        const char *email = (const char*)sqlite3_column_text(stmt, 3);
+        const char *contrasenia = (const char*)sqlite3_column_text(stmt, 4);
+        const char *numtlf = (const char*)sqlite3_column_text(stmt, 5);
+        const char *dir = (const char*)sqlite3_column_text(stmt, 6);
+        int librosReser = sqlite3_column_int(stmt, 7);
+
+        sprintf(sendBuff, "%-12s %-15s %-15s %-25s %-12s %-12s %-20s %-8d\n",
+                dni ? dni : "N/A",
+                nombre ? nombre : "N/A",
+                apellido ? apellido : "N/A",
+                email ? email : "N/A",
+                contrasenia ? contrasenia : "N/A",
+                numtlf ? numtlf : "N/A",
+                dir ? dir : "N/A",
+                librosReser);
+        send(comm_socket, sendBuff, strlen(sendBuff), 0);
+        count++;
+
+        Sleep(1);
+    }
+
+    if (count == 0) {
+        sprintf(sendBuff, "\nNo hay clientes registrados en la base de datos.\n");
+    } else {
+        sprintf(sendBuff, "\nTotal de clientes registrados: %d\n", count);
+    }
+    send(comm_socket, sendBuff, strlen(sendBuff), 0);
+
+    sprintf(sendBuff, "END_CLIENTS");
+    send(comm_socket, sendBuff, strlen(sendBuff), 0);
+
+    sqlite3_finalize(stmt);
+}
+
+void visualizarLibrosAdminBBDD(sqlite3 *db, SOCKET comm_socket, char *sendBuff) {
+    sqlite3_stmt *stmt;
+    char *sql = "SELECT ISBN, Titulo, Año, Autor, Genero, Disponibilidad FROM Libro";
+
+    int result = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
+    if (result != SQLITE_OK) {
+        sprintf(sendBuff, "\nError al preparar la consulta: %s\n", sqlite3_errmsg(db));
+        send(comm_socket, sendBuff, strlen(sendBuff), 0);
+        sprintf(sendBuff, "END_BOOKS");
+        send(comm_socket, sendBuff, strlen(sendBuff), 0);
+        return;
+    }
+
+    sprintf(sendBuff, "\n%-15s %-30s %-6s %-20s %-15s %-12s\n",
+            "ISBN", "TITULO", "AÑO", "AUTOR", "GENERO", "DISPONIBLE");
+    send(comm_socket, sendBuff, strlen(sendBuff), 0);
+
+    sprintf(sendBuff, "%.100s\n", "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+    send(comm_socket, sendBuff, strlen(sendBuff), 0);
+
+    int count = 0;
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        const char *isbn = (const char*)sqlite3_column_text(stmt, 0);
+        const char *titulo = (const char*)sqlite3_column_text(stmt, 1);
+        int anioPubli = sqlite3_column_int(stmt, 2);
+        const char *autor = (const char*)sqlite3_column_text(stmt, 3);
+        const char *genero = (const char*)sqlite3_column_text(stmt, 4);
+        int disponibilidad = sqlite3_column_int(stmt, 5);
+
+        sprintf(sendBuff, "%-15s %-30s %-6d %-20s %-15s %-12s\n",
+                isbn ? isbn : "N/A",
+                titulo ? titulo : "Sin título",
+                anioPubli,
+                autor ? autor : "Desconocido",
+                genero ? genero : "N/A",
+                disponibilidad ? "Sí" : "No");
+        send(comm_socket, sendBuff, strlen(sendBuff), 0);
+        count++;
+
+        Sleep(1);
+    }
+
+    if (count == 0) {
+        sprintf(sendBuff, "\nNo hay libros registrados en la base de datos.\n");
+    } else {
+        sprintf(sendBuff, "\nTotal de libros registrados: %d\n", count);
+    }
+    send(comm_socket, sendBuff, strlen(sendBuff), 0);
+
+    sprintf(sendBuff, "END_BOOKS");
+    send(comm_socket, sendBuff, strlen(sendBuff), 0);
+
+    sqlite3_finalize(stmt);
+}

@@ -75,9 +75,8 @@ char menuPrincipalAdministrador(){
 
 	printf("\033[1;36mMenu Principal del Administrador\n\033[0m");
 	printf("1. Eliminar libro\n");
-	printf("2. Añadir libro\n");
-	printf("3. Visualizar datos de los cliente\n");
-	printf("4. Visualizar datos de los libros\n");
+	printf("2. Visualizar datos de los cliente\n");
+	printf("3. Visualizar datos de los libros\n");
 	printf("0. Salir\n");
 	printf("\033[1;36mElige una opción: \033[0m");
 	fflush(stdout);

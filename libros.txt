@@ -16,7 +16,7 @@
 978842047;Rayuela;1963;Julio Cortázar;Ficción;5
 978849062;Todo esto te daré;2016;Dolores Redondo;Thriller;7
 978034580;Fifty Shades of Grey;2011;E. L. James;Romance;4
-978842334;Los renglones torcidos de Dios;1979;Torcuato Luca de TenMisterio;Misterio;1
+978842334;Los renglones torcidos de Dios;1979;Torcuato Luca de TenMisterio;Misterio;0
 978849129;Sira;2021;María Dueñas;Histórica;7
 978842044;El principito;1943;Antoine de Saint-ExuFábula;Fábula;6
 978030774;Gone Girl;2012;Gillian Flynn;Thriller;4

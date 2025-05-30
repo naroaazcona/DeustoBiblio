@@ -27,12 +27,15 @@ void agregarLibroBD(sqlite3 *db, Admin *admin, ListaLibros *listaLibros);
 
 void verLibrosReservadosBBDD(sqlite3 *db, char *dniUsuario,SOCKET comm_socket, char *sendBuff);
 void iniciarSesionClienteBD(sqlite3 *db, Cliente *cliente, int *enc, char *dni, char *contrasenia, SOCKET comm_socket, char *sendBuff);
-void eliminarLibroBD(sqlite3 *db, ListaLibros *listaLibros);
 
 
 void visualizarLibrosBBDD(sqlite3 *db,SOCKET comm_socket, char *sendBuff);
+void visualizarLibrosAdminBBDD(sqlite3 *db, SOCKET comm_socket, char *sendBuff);
 void registrarBD(sqlite3 *db, SOCKET s, char *sendBuff, char *recvBuff);
 int existeCliente(sqlite3 *db, const char *dni);
 void marcarLibroComoNoDisponibleBD(sqlite3 *db, const char *isbn);
+void visualizarClientesBBDD(sqlite3 *db, SOCKET comm_socket, char *sendBuff);
+void eliminarLibroBD(sqlite3 *db, ListaLibros *listaLibros, SOCKET comm_socket, char *sendBuff, int buffer_size, char *isbn_recibido);
+
 
 #endif /* BD_BASEDATOS_H_ */

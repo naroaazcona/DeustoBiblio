@@ -6,6 +6,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <winsock2.h>
+
 
 typedef struct{
 	char dni[10];

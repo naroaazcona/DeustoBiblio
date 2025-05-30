@@ -3,53 +3,45 @@
 #include <stdlib.h>
 #include <string.h>
 
-void iniciarSesion(char *usuario, char *contrasenia, int *resultado,
-		int *intentos) {
-	char linea[200];
-	*intentos = 3;
-	*resultado = 0;
-	printf("\033[1;36mIniciando sesion como administrador...\n\033[0m");
-	printf("Introduce tu nombre de usuario: ");
-	fflush(stdout);
-	fflush(stdin);
-	gets(usuario);
-	printf("Introduce tu contraseña (%d intentos restantes): ", *intentos);
-	fflush(stdout);
-	fflush(stdin);
-	gets(contrasenia);
-	while (*resultado != 2 && *intentos > 0) {
-		(*intentos)--;
-		FILE *fichero = fopen("admin.txt", "r");
-		if (fichero != (FILE*) NULL) {
-			while (fscanf(fichero, "%s", linea) != EOF && *resultado != 2) {
-				char *u = strtok(linea, ";");
-				char *c = strtok(NULL, "");
-				if (strcmp(u, usuario) == 0) {
-					*resultado = 1;
-					if (strcmp(c, contrasenia) == 0) {
-						*resultado = 2;
-					}
-				}
-			}
-			fclose(fichero);
+void iniciarSesion(char *usuario, char *contrasenia, int *resultado, int *intentos) {
+    char linea[200];
+    char *u, *c;
+    int encontrado = 0;
 
-		}
-		if (*resultado == 0) {
-			printf("Introduce tu usuario (%d intentos restantes): ", *intentos);
-			fflush(stdout);
-			fflush(stdin);
-			gets(usuario);
+    *resultado = 0;
 
-		} else if (*resultado == 1) {
-			printf("Introduce tu contrase�a (%d intentos restantes): ",
-					*intentos);
-			fflush(stdout);
-			fflush(stdin);
-			gets(contrasenia);
-		}
+    FILE *fichero = fopen("admin.txt", "r");
+    if (fichero == NULL) {
+        printf("Error: No se pudo abrir el archivo admin.txt\n");
+        *resultado = 0;
+        return;
+    }
 
-	}
+    while (fgets(linea, sizeof(linea), fichero) != NULL && !encontrado) {
+        linea[strcspn(linea, "\n")] = 0;
 
+        u = strtok(linea, ";");
+        c = strtok(NULL, ";");
+
+        if (u != NULL && c != NULL) {
+            if (strcmp(u, usuario) == 0) {
+                encontrado = 1; // Usuario encontrado
+                *resultado = 1; // Usuario correcto, verificar contraseña
+
+                if (strcmp(c, contrasenia) == 0) {
+                    *resultado = 2; // Usuario y contraseña correctos
+                    break;
+                }
+                break;
+            }
+        }
+    }
+
+    fclose(fichero);
+
+    if (!encontrado) {
+        *resultado = 0;
+    }
 }
 
 void visualizarClientes(ListaClientes clientes) {

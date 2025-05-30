@@ -14,6 +14,7 @@
 #include "db/baseDatos.h"
 #include "config.h"
 #include "logger.h"
+#define BUFFER_SIZE 512
 
 #define FICHERO_LIBROS "libros.txt"
 #define FICHERO_CLIENTE "clientes.txt"
@@ -105,7 +106,6 @@ int main(int argc, char *argv[]) {
 		int intentos = 3; //???
 		int resultado = 0; //???
 		Cliente c;
-		Admin admin;
 		ListaLibros listaLibros;
 		ListaClientes listaClientes;
 		int encontrado;
@@ -130,7 +130,6 @@ int main(int argc, char *argv[]) {
 //				opcion = menuPrincipal();
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);  //recibir
 			sscanf(recvBuff, "%c", &opcion); //obtener datos
-			sprintf(sendBuff, "Servidor Recibido: %c", opcion);
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);  //enviar
 			switch (opcion) {
 			case '1':
@@ -144,66 +143,89 @@ int main(int argc, char *argv[]) {
 
 					switch (opcionAdminInicio) {
 					case '1':
-//							iniciarSesion(usuario, contrasenia, &resultado, &intentos);
-						sprintf(sendBuff, "%d", intentos); //almacena en el sendBuff
-						send(comm_socket, sendBuff, sizeof(sendBuff), 0); //envia
-						sprintf(sendBuff, "%d", resultado);
-						send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+						intentos = 3;
+						resultado = 0;
 
-						recv(comm_socket, recvBuff, sizeof(recvBuff), 0); //recibo
-						sprintf(usuario, "%s", recvBuff); //obtengo
-						recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-						sprintf(contrasenia, "%s", recvBuff);
-						if (resultado != 2) {
-//								sprintf(sendBuff, "\033[0;31mSe te han acabado los intentos\n\033[0m");
-							sprintf(sendBuff,
-									"Se te han acabado los intentos.");
-							send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-//								escribirLog("Inicio de sesión fallida.");
-//								insertarLog("\033[3;35m Inicio de sesión fallida.\033[0m\n");
-							break;
-						} else {
-							printf("Ongi etorri!!!\n");
-//								escribirLog("Sesión iniciada por el Administrador.");
-//								insertarLog("\033[3;35m Sesión iniciada por el Administrador.\033[0m\n");
-
-						}
 						do {
-							opcionAdminPrincipal = menuPrincipalAdministrador();
-							switch (opcionAdminPrincipal) {
-							case '1':
-								printf("Eliminar libro\n");
-								fflush(stdout);
-								eliminarLibroBD(db, &listaLibros);
-								sleep(1);
-								break;
-							case '2':
-								printf("Añadir libro\n");
-								fflush(stdout);
-								agregarLibroBD(db, &admin, &listaLibros);
-								break;
-							case '3':
-								printf("Visualizar datos de los clientes:\n");
-								fflush(stdout);
-								visualizarClientes(listaClientes);
-								sleep(1);
-								break;
-							case '4':
-								printf("Visualizar datos de los libros:\n");
-								fflush(stdout);
-//								visualizarLibrosBBDD(db);
-								sleep(1);
-								break;
-							case '0':
-								printf("Volviendo al menu principal...\n");
-								break;
-							default:
-								printf(
-										"\033[0;31mError! La opción seleccionada no es correcta\n\033[0m");
-								fflush(stdout);
+							sprintf(sendBuff, "%d", intentos);
+							send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+							sprintf(sendBuff, "%d", resultado);
+							send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+							recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+							strcpy(usuario, recvBuff);
+							recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+							strcpy(contrasenia, recvBuff);
+
+							printf("Usuario recibido: %s\n", usuario);
+							printf("Contraseña recibida: %s\n", contrasenia);
+
+							iniciarSesion(usuario, contrasenia, &resultado, &intentos);
+
+							sprintf(sendBuff, "%d", resultado);
+							send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+							if (resultado == 2) {
+								sprintf(sendBuff, "Ongi etorri!!!");
+								send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+								do {
+									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+									sscanf(recvBuff, "%c", &opcionAdminPrincipal);
+
+									switch (opcionAdminPrincipal) {
+										case '1':
+											sprintf(sendBuff, "=== ELIMINAR LIBRO ===");
+											send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+											sprintf(sendBuff, "Introduce el ISBN del libro a eliminar: ");
+											send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+											recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+
+											eliminarLibroBD(db, &listaLibros, comm_socket, sendBuff, BUFFER_SIZE, recvBuff);
+											break;
+
+										case '2':
+											sprintf(sendBuff, "=== VISUALIZAR CLIENTES ===\n");
+											send(comm_socket, sendBuff, strlen(sendBuff), 0);
+											visualizarClientesBBDD(db, comm_socket, sendBuff);
+											break;
+
+										case '3':
+											sprintf(sendBuff, "=== VISUALIZAR LISTA DE LIBROS ===\n");
+											send(comm_socket, sendBuff, strlen(sendBuff), 0);
+											visualizarLibrosAdminBBDD(db, comm_socket, sendBuff);
+											break;
+
+										case '0':
+											sprintf(sendBuff, "Cerrando sesión de administrador...");
+											send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+											break;
+
+										default:
+											sprintf(sendBuff, "Opción no válida. Intente de nuevo.");
+											send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+									}
+								} while (opcionAdminPrincipal != '0');
+
+							} else {
+								intentos--;
+								if (intentos > 0) {
+									if (resultado == 0) {
+										sprintf(sendBuff, "Usuario incorrecto. Intentos restantes: %d", intentos);
+									} else if (resultado == 1) {
+										sprintf(sendBuff, "Contraseña incorrecta. Intentos restantes: %d", intentos);
+									}
+									send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+								} else {
+									sprintf(sendBuff, "Se han agotado los intentos. Acceso denegado.");
+									send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+								}
 							}
 
-						} while (opcionAdminPrincipal != '0');
+						} while (resultado != 2 && intentos > 0);
+
 						break;
 					case '0':
 						printf("Volviendo al menú principal...\n");
@@ -359,3 +381,4 @@ int main(int argc, char *argv[]) {
 
 	return 0;
 }
+

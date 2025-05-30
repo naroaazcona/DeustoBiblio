@@ -1,4 +1,4 @@
-12345678L;1;1;1;1;1;1;0
+12345678L;1;1;1;1;1;1;1
 30637030H;Susana;Perez;s.p@gmail.com;2;123456789;1;0
 47182930K;Carlos;Ramírez;c.ramirez@gmail.com;abc123;612345678;Calle Mayor 45;0
 38192047T;Laura;González;laura.gnz@hotmail.com;pass456;699123456;Avenida del Sol 10;0
