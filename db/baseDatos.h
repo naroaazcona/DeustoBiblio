@@ -20,17 +20,17 @@ void volcarFicheroClienteABBDD(char *nomfich, sqlite3 *db);
 void volcarBBDDLibroAFichero(char *nomfich, sqlite3 *db);
 void volcarBBDDClienteAFichero(char *nomfich, sqlite3 *db);
 
-void alquilarLibroBBDD(sqlite3 *db, char *dniUsuario);
-void devolverLibroBBDD(sqlite3 *db, char *dniUsuario);
+void alquilarLibroBBDD(sqlite3 *db, char *dniUsuario,  char *titulo, SOCKET comm_socket, char *sendBuff);
+void devolverLibroBBDD(sqlite3 *db, char *dniUsuario, char *titulo, SOCKET comm_socket, char *sendBuff);
 void agregarLibroBD(sqlite3 *db, Admin *admin, ListaLibros *listaLibros);
 
-void verLibrosReservadosBBDD(sqlite3 *db, char *dniUsuario);
-void iniciarSesionClienteBD(sqlite3 *db, Cliente *cliente, int *enc);
+void verLibrosReservadosBBDD(sqlite3 *db, char *dniUsuario,SOCKET comm_socket, char *sendBuff);
+void iniciarSesionClienteBD(sqlite3 *db, Cliente *cliente, int *enc, char *dni, char *contrasenia, SOCKET comm_socket, char *sendBuff);
 void eliminarLibroBD(sqlite3 *db, ListaLibros *listaLibros);
 
 
-void visualizarLibrosBBDD(sqlite3 *db);
-void registrarBD(sqlite3 *db);
+void visualizarLibrosBBDD(sqlite3 *db,SOCKET comm_socket, char *sendBuff);
+void registrarBD(sqlite3 *db, SOCKET s, char *sendBuff, char *recvBuff);
 int existeCliente(sqlite3 *db, const char *dni);
 void marcarLibroComoNoDisponibleBD(sqlite3 *db, const char *isbn);
 

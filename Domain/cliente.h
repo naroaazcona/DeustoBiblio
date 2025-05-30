@@ -25,8 +25,8 @@ typedef struct{
 }ListaClientes;
 
 void inicializarListaClientes(ListaClientes *ll);
-void visualizarTitulosPerfil();
-void verPerfil(Cliente c);
+void visualizarTitulosPerfil(SOCKET comm_socket, char *sendBuff);
+void verPerfil(Cliente c,SOCKET comm_socket, char *sendBuff);
 int cargarClientesFicheroEnLista(ListaClientes *listaClientes);
 
 

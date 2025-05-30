@@ -225,16 +225,10 @@ void volcarBBDDClienteAFichero(char *nomfich, sqlite3 *db) {
 	fclose(fichero);
 }
 
-void alquilarLibroBBDD(sqlite3 *db, char *dniUsuario) {
+void alquilarLibroBBDD(sqlite3 *db, char *dniUsuario, char *titulo, SOCKET comm_socket, char *sendBuff) {
 	sqlite3_stmt *stmt;
-	char titulo[100];
 	int disponibilidad = -1;
 	char isbn[10];
-
-	printf("Introduce el título del libro que quieres alquilar: ");
-	fflush(stdout);
-	fflush(stdin);
-	gets(titulo);
 
 	char *select = "SELECT Disponibilidad, ISBN FROM Libro WHERE Titulo = ?";
 	if (sqlite3_prepare_v2(db, select, -1, &stmt, NULL) == SQLITE_OK) {
@@ -248,21 +242,23 @@ void alquilarLibroBBDD(sqlite3 *db, char *dniUsuario) {
 	sqlite3_finalize(stmt);
 
 	if (disponibilidad == -1) {
-		printf("\033[0;31mLibro con título '%s' no encontrado.\n\033[0m", titulo);
-		fflush(stdout);
+		sprintf(sendBuff,"\033[0;31mLibro con título '%s' no encontrado.\n\033[0m", titulo);
 		return;
 	} else if (disponibilidad == 0) {
-		printf("\033[0;31mNo hay copias disponibles del libro '%s'.\n\033[0m", titulo);
-		fflush(stdout);
+		sprintf(sendBuff,"\033[0;31mNo hay copias disponibles del libro '%s'.\n\033[0m", titulo);
 		return;
 	}
+	send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);
+
+
 
 	char *actualiza = "UPDATE Libro SET Disponibilidad = Disponibilidad - 1 "
 			"WHERE Titulo = ?";
 	if (sqlite3_prepare_v2(db, actualiza, -1, &stmt, NULL) == SQLITE_OK) {
 		sqlite3_bind_text(stmt, 1, titulo, -1, SQLITE_STATIC);
 		if (sqlite3_step(stmt) == SQLITE_DONE) {
-			printf("\033[1;32mLibro '%s' alquilado correctamente.\033[0m\n", titulo);
+			sprintf(sendBuff, "\033[1;32mLibro '%s' alquilado correctamente.\033[0m\n", titulo);
+			send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);
 		}
 	}
 	sqlite3_finalize(stmt);
@@ -273,7 +269,8 @@ void alquilarLibroBBDD(sqlite3 *db, char *dniUsuario) {
 		sqlite3_bind_text(stmt, 2, dniUsuario, -1, SQLITE_STATIC);
 		sqlite3_bind_int64(stmt, 3, (sqlite3_int64) time(NULL));
 		if (sqlite3_step(stmt) == SQLITE_DONE) {
-			printf("\033[1;34mReserva registrada correctamente.\033[0m\n\n");
+			sprintf(sendBuff,"\033[1;34mReserva registrada correctamente.\033[0m\n\n");
+			send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);
 		}
 	}
 	sqlite3_finalize(stmt);
@@ -290,70 +287,66 @@ void alquilarLibroBBDD(sqlite3 *db, char *dniUsuario) {
 
 }
 
-void devolverLibroBBDD(sqlite3 *db, char *dniUsuario) {
-	sqlite3_stmt *stmt;
-	char titulo[100];
-	int encontrado = 0;
-	char isbn[10];
+void devolverLibroBBDD(sqlite3 *db, char *dniUsuario, char *titulo, SOCKET comm_socket, char *sendBuff) {
+		sqlite3_stmt *stmt;
+		int encontrado = 0;
+		char isbn[10];
 
-	printf("Introduce el título del libro que deseas devolver: ");
-	fflush(stdout);
-	fflush(stdin);
-	gets(titulo);
+		char *selectLibro = "SELECT ISBN FROM Libro WHERE Titulo = ?";
+		if (sqlite3_prepare_v2(db, selectLibro, -1, &stmt, NULL) == SQLITE_OK) {
+			sqlite3_bind_text(stmt, 1, titulo, -1, SQLITE_STATIC);
+			if (sqlite3_step(stmt) == SQLITE_ROW) {
+				strncpy(isbn, (char*) sqlite3_column_text(stmt, 0), 10);
+			} else {
+				sprintf(sendBuff, "\033[0;31mLibro con título '%s' no encontrado.\n\033[0m", titulo);
+				send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);
+				sqlite3_finalize(stmt);
+				return;
+			}
+		}
+		sqlite3_finalize(stmt);
 
-	char *selectLibro = "SELECT ISBN FROM Libro WHERE Titulo = ?";
-	if (sqlite3_prepare_v2(db, selectLibro, -1, &stmt, NULL) == SQLITE_OK) {
-		sqlite3_bind_text(stmt, 1, titulo, -1, SQLITE_STATIC);
-		if (sqlite3_step(stmt) == SQLITE_ROW) {
-			strncpy(isbn, (char*) sqlite3_column_text(stmt, 0), 10);
-		} else {
-			printf("\033[0;31mLibro con título '%s' no encontrado.\n\033[0m", titulo);
-			sqlite3_finalize(stmt);
+		char *selectReserva ="SELECT * FROM Reserva WHERE ISBN = ? AND DNI = ?";
+		if (sqlite3_prepare_v2(db, selectReserva, -1, &stmt, NULL) == SQLITE_OK) {
+			sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
+			sqlite3_bind_text(stmt, 2, dniUsuario, -1, SQLITE_STATIC);
+			if (sqlite3_step(stmt) == SQLITE_ROW) {
+				encontrado = 1;
+			}
+		}
+		sqlite3_finalize(stmt);
+
+		if (!encontrado) {
+			sprintf(sendBuff,"\033[1;31mNo tienes ninguna reserva activa para el libro '%s'.\033[0m\n\n",
+					titulo);
+			send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);
 			return;
 		}
-	}
-	sqlite3_finalize(stmt);
 
-	char *selectReserva ="SELECT * FROM Reserva WHERE ISBN = ? AND DNI = ?";
-	if (sqlite3_prepare_v2(db, selectReserva, -1, &stmt, NULL) == SQLITE_OK) {
-		sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
-		sqlite3_bind_text(stmt, 2, dniUsuario, -1, SQLITE_STATIC);
-		if (sqlite3_step(stmt) == SQLITE_ROW) {
-			encontrado = 1;
+		char *actualizarLibro ="UPDATE Libro SET Disponibilidad = Disponibilidad + 1 WHERE ISBN = ?";
+		if (sqlite3_prepare_v2(db, actualizarLibro, -1, &stmt, NULL) == SQLITE_OK) {
+			sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
+			sqlite3_step(stmt);
 		}
-	}
-	sqlite3_finalize(stmt);
+		sqlite3_finalize(stmt);
 
-	if (!encontrado) {
-		printf("\033[1;31mNo tienes ninguna reserva activa para el libro '%s'.\033[0m\n\n",
-				titulo);
-		fflush(stdout);
-		return;
-	}
+		char *eliminarReserva = "DELETE FROM Reserva WHERE ISBN = ? AND DNI = ?";
+		if (sqlite3_prepare_v2(db, eliminarReserva, -1, &stmt, NULL) == SQLITE_OK) {
+			sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
+			sqlite3_bind_text(stmt, 2, dniUsuario, -1, SQLITE_STATIC);
+			sqlite3_step(stmt);
+		}
+		sqlite3_finalize(stmt);
 
-	char *actualizarLibro ="UPDATE Libro SET Disponibilidad = Disponibilidad + 1 WHERE ISBN = ?";
-	if (sqlite3_prepare_v2(db, actualizarLibro, -1, &stmt, NULL) == SQLITE_OK) {
-		sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
-		sqlite3_step(stmt);
-	}
-	sqlite3_finalize(stmt);
+		char *actualizarCliente ="UPDATE Cliente SET LibrosReservados = LibrosReservados - 1 WHERE DNI = ?";
+		if (sqlite3_prepare_v2(db, actualizarCliente, -1, &stmt, NULL) == SQLITE_OK) {
+			sqlite3_bind_text(stmt, 1, dniUsuario, -1, SQLITE_STATIC);
+			sqlite3_step(stmt);
+		}
+		sqlite3_finalize(stmt);
 
-	char *eliminarReserva = "DELETE FROM Reserva WHERE ISBN = ? AND DNI = ?";
-	if (sqlite3_prepare_v2(db, eliminarReserva, -1, &stmt, NULL) == SQLITE_OK) {
-		sqlite3_bind_text(stmt, 1, isbn, -1, SQLITE_STATIC);
-		sqlite3_bind_text(stmt, 2, dniUsuario, -1, SQLITE_STATIC);
-		sqlite3_step(stmt);
-	}
-	sqlite3_finalize(stmt);
-
-	char *actualizarCliente ="UPDATE Cliente SET LibrosReservados = LibrosReservados - 1 WHERE DNI = ?";
-	if (sqlite3_prepare_v2(db, actualizarCliente, -1, &stmt, NULL) == SQLITE_OK) {
-		sqlite3_bind_text(stmt, 1, dniUsuario, -1, SQLITE_STATIC);
-		sqlite3_step(stmt);
-	}
-	sqlite3_finalize(stmt);
-
-	printf("\033[1;32mLibro '%s' devuelto correctamente.\033[0m\n\n", titulo);
+		sprintf(sendBuff, "\033[1;32mLibro '%s' devuelto correctamente.\033[0m\n\n", titulo);
+		send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);
 
 }
 
@@ -420,42 +413,56 @@ int existeCliente(sqlite3 *db, const char *dni) {
 }
 
 
-void registrarBD(sqlite3 *db){
+void registrarBD(sqlite3 *db, SOCKET s, char *sendBuff, char *recvBuff){
 	Cliente nuevoCliente;
 
-	printf("Introduce DNI: ");
-	fflush(stdout);
-	fflush(stdin);
-	gets(nuevoCliente.dni);
+	recv(s, recvBuff, sizeof(recvBuff), 0);
+	strcpy(nuevoCliente.dni, recvBuff);
 
+	int encontrado = 0;
+	char enc[2];
 	if (existeCliente(db, nuevoCliente.dni)) {
-        printf("\033[1;32m El usuario con DNI %s ya está registrado.\033[0m\n", nuevoCliente.dni);
+		encontrado = 1;
+		sprintf(enc, "%d", encontrado);
+		strcpy(sendBuff, enc);
+		send(s, sendBuff, strlen(sendBuff)+1, 0);
 		return;
 	}
+	//printf("Introduce nombre: ");
+	//gets(nuevoCliente.nombre);
 
-	printf("Introduce nombre: ");
-	fflush(stdout);
-	gets(nuevoCliente.nombre);
+	recv(s, recvBuff, sizeof(recvBuff), 0);
+	strcpy(nuevoCliente.nombre, recvBuff);
 
-	printf("Introduce apellido: ");
-	fflush(stdout);
-	gets(nuevoCliente.apellido);
+	//printf("Introduce apellido: ");
+	//gets(nuevoCliente.apellido);
 
-	printf("Introduce email: ");
-	fflush(stdout);
-	gets(nuevoCliente.email);
+	recv(s, recvBuff, sizeof(recvBuff), 0);
+	strcpy(nuevoCliente.apellido, recvBuff);
 
-	printf("Introduce contraseña: ");
-	fflush(stdout);
-	gets(nuevoCliente.contrasenia);
+	//printf("Introduce email: ");
+	//gets(nuevoCliente.email);
 
-	printf("Introduce número de teléfono: ");
-	fflush(stdout);
-	gets(nuevoCliente.numeroTlf);
+	recv(s, recvBuff, sizeof(recvBuff), 0);
+	strcpy(nuevoCliente.email, recvBuff);
 
-	printf("Introduce dirección: ");
-	fflush(stdout);
-	gets(nuevoCliente.direccion);
+	//printf("Introduce contraseña: ");
+	//gets(nuevoCliente.contrasenia);
+
+	recv(s, recvBuff, sizeof(recvBuff), 0);
+	strcpy(nuevoCliente.contrasenia, recvBuff);
+
+	//printf("Introduce número de teléfono: ");
+	//gets(nuevoCliente.numeroTlf);
+
+	recv(s, recvBuff, sizeof(recvBuff), 0);
+	strcpy(nuevoCliente.numeroTlf, recvBuff);
+
+	//printf("Introduce dirección: ");
+	//gets(nuevoCliente.direccion);
+
+	recv(s, recvBuff, sizeof(recvBuff), 0);
+	strcpy(nuevoCliente.direccion, recvBuff);
 
 	nuevoCliente.numerosLReservados = 0;
 
@@ -474,10 +481,12 @@ void registrarBD(sqlite3 *db){
 		sqlite3_bind_int(stmt, 8, nuevoCliente.numerosLReservados);
 
 		if (sqlite3_step(stmt) == SQLITE_DONE) {
-			printf("\033[1;32m Registro completado correctamente.\033[0m\n");
+			sprintf(sendBuff,"\033[1;32m Registro completado correctamente.\033[0m\n");
 		} else {
-			printf("\033[1;31m Error al registrar el cliente: %s\033[0m\n", sqlite3_errmsg(db));
+			sprintf(sendBuff,"\033[1;31m Error al registrar el cliente: %s\033[0m\n", sqlite3_errmsg(db));
 		}
+
+		send(s, sendBuff, strlen(sendBuff)+1, 0);
 	} else {
 		fprintf(stderr, "\033[1;31mError al preparar la consulta: %s\n\033[0m", sqlite3_errmsg(db));
 	}
@@ -486,7 +495,7 @@ void registrarBD(sqlite3 *db){
 }
 
 
-void visualizarLibrosBBDD(sqlite3 *db) {
+void visualizarLibrosBBDD(sqlite3 *db,SOCKET comm_socket, char *sendBuff) {
     sqlite3_stmt *stmt;
     char *sql = "SELECT ISBN, Titulo, Año, Autor, Genero, Disponibilidad FROM Libro";
 
@@ -496,13 +505,17 @@ void visualizarLibrosBBDD(sqlite3 *db) {
         return;
     }
 
-    visualizarTitulosLibro();
-	printf("\033[1;33m--------------------------------------------------------------------------------------------------------------------------------------"
+    //EMPIEZA SOCKET
+    visualizarTitulosLibro(comm_socket,sendBuff); //AQUI HAY 1 ENVIO
+	sprintf(sendBuff,"\033[1;33m--------------------------------------------------------------------------------------------------------------------------------------"
 			"--------------------------------\n\033[0m");
-
+	send(comm_socket,sendBuff,strlen(sendBuff)+1,0);  //enviar
     int count = 0;
 
+    int fin = 0; //VARIABLE CREADA
+    sprintf(sendBuff,"%d",fin);
     while (sqlite3_step(stmt) == SQLITE_ROW) {
+    	send(comm_socket,sendBuff,strlen(sendBuff)+1,0);  //enviar
         const char *isbn = (const char*)sqlite3_column_text(stmt, 0);
         const char *titulo = (const char*)sqlite3_column_text(stmt, 1);
         int anioPubli = sqlite3_column_int(stmt, 2);
@@ -510,21 +523,26 @@ void visualizarLibrosBBDD(sqlite3 *db) {
         const char *genero = (const char*)sqlite3_column_text(stmt, 4);
         int disponibilidad = sqlite3_column_int(stmt, 5);
 
-        printf("\033[1;33m%30s|%30s|%20d|%40s|%20s|%20s\n\033[0m",
+        sprintf(sendBuff,"\033[1;33m%30s|%30s|%20d|%40s|%20s|%20s\n\033[0m",
                isbn, titulo, anioPubli, autor, genero, disponibilidad ? "Disponible" : "No disponible");
+        send(comm_socket,sendBuff,strlen(sendBuff)+1,0);  //enviar
 
         count++;
     }
 
+    fin = 1;
+    sprintf(sendBuff,"%d",fin);
+    send(comm_socket,sendBuff,strlen(sendBuff)+1,0);  //enviar
+
     if (count == 0) {
-        printf("\033[1;31m No hay libros registrados en la base de datos.\033[0m\n");
+        sprintf(sendBuff,"\033[1;31m No hay libros registrados en la base de datos.\033[0m\n");
     } else {
-        printf("\nTotal de libros: %d\n", count);
+        sprintf(sendBuff,"\nTotal de libros: %d\n", count);
     }
+    send(comm_socket,sendBuff,strlen(sendBuff)+1,0);  //enviar
 
     sqlite3_finalize(stmt);
 }
-
 void marcarLibroComoNoDisponibleBD(sqlite3 *db, const char *isbn) {
     sqlite3_stmt *stmt;
     const char *updateDispoLibro = "UPDATE Libro SET Disponible = 0 WHERE ISBN = ?";
@@ -544,7 +562,7 @@ void marcarLibroComoNoDisponibleBD(sqlite3 *db, const char *isbn) {
     sqlite3_finalize(stmt);
 }
 
-void verLibrosReservadosBBDD(sqlite3 *db, char *dniUsuario) {
+void verLibrosReservadosBBDD(sqlite3 *db, char *dniUsuario,SOCKET comm_socket, char *sendBuff) {
 	sqlite3_stmt *stmt;
 	char *select = "SELECT Libro.Titulo "
 			"FROM Reserva "
@@ -555,15 +573,19 @@ void verLibrosReservadosBBDD(sqlite3 *db, char *dniUsuario) {
 		sqlite3_bind_text(stmt, 1, dniUsuario, -1, SQLITE_STATIC);
 		int contador = 0;
 
-		printf("\033[1;33mLibros reservados por el usuario con DNI %s:\n\033[0m", dniUsuario);
+		sprintf(sendBuff,"\033[1;33mLibros reservados por el usuario con DNI %s:\n\033[0m", dniUsuario);
+		send(comm_socket, sendBuff, strlen(sendBuff)+1,0);
+
 		while (sqlite3_step(stmt) == SQLITE_ROW) {
 			const unsigned char *titulo = sqlite3_column_text(stmt, 0);
-			printf("\033[1;33m- Título: %s \n\033[0m", titulo);
+			sprintf(sendBuff,"\033[1;33m- Título: %s \n\033[0m", titulo);
+			send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);
 			contador++;
 		}
 
 		if (contador == 0) {
-			printf("\033[1;31mNo tienes libros reservados.\n\033[0m");
+			sprintf(sendBuff,"\033[1;31mNo tienes libros reservados.\n\033[0m");
+			send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);
 		}
 
 		sqlite3_finalize(stmt);
@@ -573,20 +595,9 @@ void verLibrosReservadosBBDD(sqlite3 *db, char *dniUsuario) {
 	}
 }
 
-void iniciarSesionClienteBD(sqlite3 *db, Cliente *cliente, int *enc) {
+
+void iniciarSesionClienteBD(sqlite3 *db, Cliente *cliente, int *enc, char *dni, char *contrasenia, SOCKET comm_socket, char *sendBuff) {
 	sqlite3_stmt *stmt;
-	char dni[10];
-	char contrasenia[20];
-
-	printf("Introduce tu DNI: ");
-	fflush(stdout);
-	fflush(stdin);
-	gets(dni);
-
-	printf("Introduce tu contraseña: ");
-	fflush(stdout);
-	fflush(stdin);
-	gets(contrasenia);
 
 	char *sql = "SELECT * FROM Cliente WHERE DNI = ? AND Contraseña = ?";
 	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
@@ -607,9 +618,10 @@ void iniciarSesionClienteBD(sqlite3 *db, Cliente *cliente, int *enc) {
 		strcpy(cliente->direccion, (const char*) sqlite3_column_text(stmt, 6));
 		cliente->numerosLReservados = sqlite3_column_int(stmt, 7);
 		*enc = 1;
-		printf("\033[1;32mInicio de sesión exitoso. ¡Bienvenid@, %s %s!\033[0m\n", cliente->nombre, cliente->apellido);
+		sprintf(sendBuff,"\033[1;32mInicio de sesión exitoso. ¡Bienvenid@, %s %s!\033[0m\n", cliente->nombre, cliente->apellido);
+
 	} else {
-		printf("\033[1;31mError: DNI o contraseña incorrectos.\033[0m\n");
+		sprintf(sendBuff, "\033[1;31mError: DNI o contraseña incorrectos.\033[0m\n");
 		*enc = 0;
 	}
 

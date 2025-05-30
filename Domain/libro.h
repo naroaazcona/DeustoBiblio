@@ -21,7 +21,7 @@ typedef struct{
 
 void inicializarListaLibros(ListaLibros *ll);
 Libro pedirDatosLibro();
-void visualizarTitulosLibro();
+void visualizarTitulosLibro(SOCKET comm_socket, char *sendBuff);
 int cargarLibrosDesdeFichero(ListaLibros *ll);
 
 

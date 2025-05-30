@@ -5,22 +5,22 @@ void inicializarListaClientes(ListaClientes *ll){
 	ll->aClientes = NULL;
 	ll->numeroClientes = 0;
 }
-void visualizarTitulosPerfil() {
-	printf("\033[1;33m%10s|%10s|%10s|%30s|%20s|%20s|%20s|%20s\n\033[0m", "DNI",
+void visualizarTitulosPerfil(SOCKET comm_socket, char *sendBuff) {
+	sprintf(sendBuff,"\033[1;33m%10s|%10s|%10s|%30s|%20s|%20s|%20s|%20s\n\033[0m", "DNI",
 			"NOMBRE", "APELLIDO", "EMAIL", "CONTRASEÑA", "NÚMERO TELÉFONO",
 			"DIRECCIÓN", "LIBROS RESERVADOS");
-	printf(
+	send(comm_socket,sendBuff,sizeof(sendBuff),0);  //enviar
+	sprintf(sendBuff,
 			"\033[1;33m-----------------------------------------------------------------------------------------------------------------------------------------------\n\033[0m");
-	fflush(stdout);
+	send(comm_socket,sendBuff,sizeof(sendBuff),0);
 }
 
-void verPerfil(Cliente c) {
-	visualizarTitulosPerfil();
-	printf("\033[1;33m%10s|%10s|%10s|%30s|%19s|%18s|%19s|%20d\n\033[0m", c.dni,
+void verPerfil(Cliente c, SOCKET comm_socket, char *sendBuff) {
+	visualizarTitulosPerfil(comm_socket,sendBuff);
+	sprintf(sendBuff,"\033[1;33m%10s|%10s|%10s|%30s|%19s|%18s|%19s|%20d\n\033[0m", c.dni,
 			c.nombre, c.apellido, c.email, c.contrasenia, c.numeroTlf,
 			c.direccion, c.numerosLReservados);
-	fflush(stdout);
-
+	send(comm_socket,sendBuff,sizeof(sendBuff),0);
 }
 
 int cargarClientesFicheroEnLista(ListaClientes *listaClientes) {

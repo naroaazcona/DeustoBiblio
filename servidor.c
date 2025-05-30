@@ -95,206 +95,259 @@ int main(int argc, char *argv[]) {
 	// Closing the listening sockets (is not going to be used anymore)
 	closesocket(conn_socket);
 
-
 	int fin = 0;
 	do {
 		/*EMPIEZA EL PROGRAMA DEL SERVIDOR*/
-		char opcion, opcionClienteInicio, opcionAdminInicio, opcionClientePrincipal,
-					opcionAdminPrincipal, usuario[20], contrasenia[20];
+		char opcion, opcionClienteInicio, opcionAdminInicio,
+				opcionClientePrincipal, opcionAdminPrincipal, usuario[20],
+				contrasenia[20], dni[10], titulo[100];
 //			int resultado, intentos;
-			int intentos = 3; //???
-			int resultado = 0; //???
-			Cliente c;
-			Admin admin;
-			ListaLibros listaLibros;
-			ListaClientes listaClientes;
-			int encontrado;
+		int intentos = 3; //???
+		int resultado = 0; //???
+		Cliente c;
+		Admin admin;
+		ListaLibros listaLibros;
+		ListaClientes listaClientes;
+		int encontrado;
 
-			/*Config conf = leerConfiguracion("config.properties");
-			escribirLog("Configuración leída correctamente.");
-			insertarLog("\033[3;35m Configuración leída correctamente.\033[0m\n");*/
+		/*Config conf = leerConfiguracion("config.properties");
+		 escribirLog("Configuración leída correctamente.");
+		 insertarLog("\033[3;35m Configuración leída correctamente.\033[0m\n");*/
 
-			inicializarListaClientes(&listaClientes);
-			inicializarListaLibros(&listaLibros);
-			cargarLibrosDesdeFichero(&listaLibros);
-			cargarClientesFicheroEnLista(&listaClientes);
+		inicializarListaClientes(&listaClientes);
+		inicializarListaLibros(&listaLibros);
+		cargarLibrosDesdeFichero(&listaLibros);
+		cargarClientesFicheroEnLista(&listaClientes);
 
-			sqlite3 *db = conectarDB();
-			crearTablaLibro(db);
-			crearTablaUsuario(db);
-			crearTablaReserva(db);
-			volcarFicheroLibroABBDD(FICHERO_LIBROS, db);
-			volcarFicheroClienteABBDD(FICHERO_CLIENTE, db);
+		sqlite3 *db = conectarDB();
+		crearTablaLibro(db);
+		crearTablaUsuario(db);
+		crearTablaReserva(db);
+		volcarFicheroLibroABBDD(FICHERO_LIBROS, db);
+		volcarFicheroClienteABBDD(FICHERO_CLIENTE, db);
 
-			do {
+		do {
 //				opcion = menuPrincipal();
-				recv(comm_socket,recvBuff,sizeof(recvBuff),0);  //recibir
-				sscanf(recvBuff,"%c",&opcion); //obtener datos
-				sprintf(sendBuff,"Servidor Recibido: %c",opcion);
-				send(comm_socket,sendBuff,sizeof(sendBuff),0);  //enviar
-				switch (opcion) {
-				case '1':
-					do {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);  //recibir
+			sscanf(recvBuff, "%c", &opcion); //obtener datos
+			sprintf(sendBuff, "Servidor Recibido: %c", opcion);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);  //enviar
+			switch (opcion) {
+			case '1':
+				do {
 //						opcionAdminInicio = menuAdministradorInicio();
-						recv(comm_socket,recvBuff,sizeof(recvBuff),0);  //recibir
-						sscanf(recvBuff,"%c",&opcionAdminInicio); //obtener datos
-						sprintf(sendBuff,"Servidor Recibido: %c",opcionAdminInicio);
-						send(comm_socket,sendBuff,sizeof(sendBuff),0);  //enviar
+					recv(comm_socket, recvBuff, sizeof(recvBuff), 0);  //recibir
+					sscanf(recvBuff, "%c", &opcionAdminInicio); //obtener datos
+					sprintf(sendBuff, "Servidor Recibido: %c",
+							opcionAdminInicio);
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);  //enviar
 
-						switch (opcionAdminInicio) {
-						case '1':
+					switch (opcionAdminInicio) {
+					case '1':
 //							iniciarSesion(usuario, contrasenia, &resultado, &intentos);
-							sprintf(sendBuff,"%d",intentos); //almacena en el sendBuff
-							send(comm_socket,sendBuff,sizeof(sendBuff),0); //envia
-							sprintf(sendBuff,"%d",resultado);
-							send(comm_socket,sendBuff,sizeof(sendBuff),0);
+						sprintf(sendBuff, "%d", intentos); //almacena en el sendBuff
+						send(comm_socket, sendBuff, sizeof(sendBuff), 0); //envia
+						sprintf(sendBuff, "%d", resultado);
+						send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
-							recv(comm_socket,recvBuff,sizeof(recvBuff),0); //recibo
-							sprintf(usuario,"%s",recvBuff); //obtengo
-							recv(comm_socket,recvBuff,sizeof(recvBuff),0);
-							sprintf(contrasenia,"%s",recvBuff);
-							if (resultado != 2) {
+						recv(comm_socket, recvBuff, sizeof(recvBuff), 0); //recibo
+						sprintf(usuario, "%s", recvBuff); //obtengo
+						recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+						sprintf(contrasenia, "%s", recvBuff);
+						if (resultado != 2) {
 //								sprintf(sendBuff, "\033[0;31mSe te han acabado los intentos\n\033[0m");
-								sprintf(sendBuff, "Se te han acabado los intentos.");
-								send(comm_socket,sendBuff,sizeof(sendBuff),0);
+							sprintf(sendBuff,
+									"Se te han acabado los intentos.");
+							send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 //								escribirLog("Inicio de sesión fallida.");
 //								insertarLog("\033[3;35m Inicio de sesión fallida.\033[0m\n");
-								break;
-							} else {
-								printf("Ongi etorri!!!\n");
+							break;
+						} else {
+							printf("Ongi etorri!!!\n");
 //								escribirLog("Sesión iniciada por el Administrador.");
 //								insertarLog("\033[3;35m Sesión iniciada por el Administrador.\033[0m\n");
 
+						}
+						do {
+							opcionAdminPrincipal = menuPrincipalAdministrador();
+							switch (opcionAdminPrincipal) {
+							case '1':
+								printf("Eliminar libro\n");
+								fflush(stdout);
+								eliminarLibroBD(db, &listaLibros);
+								sleep(1);
+								break;
+							case '2':
+								printf("Añadir libro\n");
+								fflush(stdout);
+								agregarLibroBD(db, &admin, &listaLibros);
+								break;
+							case '3':
+								printf("Visualizar datos de los clientes:\n");
+								fflush(stdout);
+								visualizarClientes(listaClientes);
+								sleep(1);
+								break;
+							case '4':
+								printf("Visualizar datos de los libros:\n");
+								fflush(stdout);
+								visualizarLibrosBBDD(db);
+								sleep(1);
+								break;
+							case '0':
+								printf("Volviendo al menu principal...\n");
+								break;
+							default:
+								printf(
+										"\033[0;31mError! La opción seleccionada no es correcta\n\033[0m");
+								fflush(stdout);
 							}
+
+						} while (opcionAdminPrincipal != '0');
+						break;
+					case '0':
+						printf("Volviendo al menú principal...\n");
+						fflush(stdout);
+						break;
+					default:
+						printf(
+								"\033[0;31mError! La opción seleccionada no es correcta\n\033[0m");
+						fflush(stdout);
+						escribirLog("Opción escogida NO correcta.");
+						insertarLog(
+								"\033[3;35m Opción escogida NO correcta.\033[0m\n");
+					}
+				} while (opcionAdminInicio != '0');
+				break;
+			case '2':
+				do {
+					recv(comm_socket, recvBuff, sizeof(recvBuff), 0);  //recibir
+					sscanf(recvBuff, "%c", &opcionClienteInicio);
+
+					switch (opcionClienteInicio) {
+					case '1':
+						recv(comm_socket, recvBuff, sizeof(recvBuff), 0); //recibir varible DNi
+						sprintf(dni, "%s", recvBuff);
+						recv(comm_socket, recvBuff, sizeof(recvBuff), 0); //recibir variable CONTRASEÑA
+						sprintf(contrasenia, "%s", recvBuff);
+
+						iniciarSesionClienteBD(db, &c, &encontrado, dni,
+								contrasenia, comm_socket, sendBuff); //AQUI SOLO HAY UN SEND
+						send(comm_socket, sendBuff, sizeof(sendBuff), 0); //enviar
+
+						sprintf(sendBuff, "%d", encontrado);
+						send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+						escribirLog("Sesión iniciada por el Cliente.");
+						insertarLog(
+								"\033[3;35m Sesión iniciada por el Cliente.\033[0m\n");
+						if (encontrado) {
 							do {
-								opcionAdminPrincipal = menuPrincipalAdministrador();
-								switch (opcionAdminPrincipal) {
+								recv(comm_socket, recvBuff, sizeof(recvBuff),
+										0);
+								sscanf(recvBuff, "%c", &opcionClientePrincipal);
+
+								switch (opcionClientePrincipal) {
 								case '1':
-									printf("Eliminar libro\n");
+									sprintf(sendBuff, "Visitar perfil\n");
+									printf("%s\n", sendBuff);
 									fflush(stdout);
-									eliminarLibroBD(db, &listaLibros);
-									sleep(1);
+									send(comm_socket, sendBuff,
+											sizeof(sendBuff), 0);  //enviar
+
+									verPerfil(c, comm_socket, sendBuff);
+
 									break;
 								case '2':
-									printf("Añadir libro\n");
-									fflush(stdout);
-									agregarLibroBD(db, &admin, &listaLibros);
+									sprintf(sendBuff,
+											"Ver libros disponibles\n");
+									send(comm_socket, sendBuff,
+											strlen(sendBuff) + 1, 0);  //enviar
+
+									visualizarLibrosBBDD(db, comm_socket,
+											sendBuff);
+
 									break;
 								case '3':
-									printf("Visualizar datos de los clientes:\n");
-									fflush(stdout);
-									visualizarClientes(listaClientes);
-									sleep(1);
+									sprintf(sendBuff, "Reservar libros\n");
+									send(comm_socket, sendBuff,
+											strlen(sendBuff) + 1, 0);
+
+									recv(comm_socket, recvBuff,
+											sizeof(recvBuff), 0);
+									strcpy(titulo, recvBuff);
+
+									alquilarLibroBBDD(db, c.dni, titulo,
+											comm_socket, sendBuff);
+
 									break;
 								case '4':
-									printf("Visualizar datos de los libros:\n");
-									fflush(stdout);
-									visualizarLibrosBBDD(db);
-									sleep(1);
+									sprintf(sendBuff, "Devolver libros\n");
+									send(comm_socket, sendBuff,
+											strlen(sendBuff) + 1, 0);
+
+									recv(comm_socket, recvBuff,
+											sizeof(recvBuff), 0);
+									strcpy(titulo, recvBuff);
+
+									devolverLibroBBDD(db, c.dni, titulo,
+											comm_socket, sendBuff);
+
+									break;
+								case '5':
+									sprintf(sendBuff,
+											"Ver libros reservados\n");
+									send(comm_socket, sendBuff,
+											strlen(sendBuff) + 1, 0);
+
+									verLibrosReservadosBBDD(db, c.dni,
+											comm_socket, sendBuff);
+
 									break;
 								case '0':
-									printf("Volviendo al menu principal...\n");
-									break;
+									sprintf(sendBuff,"Volviendo al menu principal...\n");
+									send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);									break;
 								default:
-									printf("\033[0;31mError! La opción seleccionada no es correcta\n\033[0m");
-									fflush(stdout);
+									sprintf(sendBuff,"\033[0;31mError! La opción seleccionada no es correcta\n\033[0m");
+									send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);
+
 								}
 
-							} while (opcionAdminPrincipal != '0');
-							break;
-						case '0':
-							printf("Volviendo al menú principal...\n");
-							fflush(stdout);
-							break;
-						default:
-							printf("\033[0;31mError! La opción seleccionada no es correcta\n\033[0m");
-							fflush(stdout);
-							escribirLog("Opción escogida NO correcta.");
-							insertarLog("\033[3;35m Opción escogida NO correcta.\033[0m\n");
+							} while (opcionClientePrincipal != '0');
 						}
-					} while (opcionAdminInicio != '0');
-					break;
-				case '2':
-					do {
-						opcionClienteInicio = menuClienteInicio();
-						switch (opcionClienteInicio) {
-						case '1':
-							iniciarSesionClienteBD(db,&c,&encontrado);
-							escribirLog("Sesión iniciada por el Cliente.");
-							insertarLog("\033[3;35m Sesión iniciada por el Cliente.\033[0m\n");
-							if (encontrado) {
-								do {
-									opcionClientePrincipal = menuPrincipalCliente();
-									switch (opcionClientePrincipal) {
-									case '1':
-										printf("Visitar perfil\n");
-										fflush(stdout);
-										verPerfil(c);
-										sleep(1);
-										break;
-									case '2':
-										printf("Ver libros disponibles\n");
-										fflush(stdout);
-										visualizarLibrosBBDD(db);
-										sleep(1);
-										break;
-									case '3':
-										printf("Reservar libros\n");
-										fflush(stdout);
-										alquilarLibroBBDD(db, c.dni);
-										sleep(1);
-										break;
-									case '4':
-										printf("Devolver libros\n");
-										fflush(stdout);
-										devolverLibroBBDD(db, c.dni);
-										break;
-									case '5':
-										printf("Ver libros reservados\n");
-										fflush(stdout);
-										verLibrosReservadosBBDD(db,c.dni);
-										sleep(1);
-										break;
-									case '0':
-										printf("Volviendo al menu principal...\n");
-										break;
-									default:
-										printf("\033[0;31mError! La opción seleccionada no es correcta\n\033[0m");
-										fflush(stdout);
-									}
+						break;
+					case '2':
+						registrarBD(db, comm_socket, sendBuff, recvBuff);
+						break;
+					case '0':
+						sprintf(sendBuff, "Volviendo al menú principal...\n\n");
+						send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);
+						break;
+					default:
+						sprintf(sendBuff,
+								"\033[0;31mOpción invalida. Por favor, ingrese una opción válida.\n\033[0m");
+						send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);
 
-								} while (opcionClientePrincipal != '0');
-							}
-							break;
-						case '2':
-							registrarBD(db);
-							break;
-						case '0':
-							printf("Volviendo al menú principal...\n\n");
-							fflush(stdout);
-							break;
-						default:
-							printf("\033[0;31mOpción invalida. Por favor, ingrese una opción válida.\n\033[0m");
-							fflush(stdout);
-						}
+					}
 
-					} while (opcionClienteInicio != '0');
+				} while (opcionClienteInicio != '0');
 
-					break;
-				case '0':
-					printf("Hasta pronto!!\n");
-					fflush(stdout);
-					escribirLog("Se ha cerrado sesión.");
-					insertarLog("\033[3;35m Se ha cerrado sesión.\033[0m\n");
-					break;
-				default:
-					printf("\033[0;31mOpción invalida. Por favor, ingrese una opción válida.\n\033[0m");
-					fflush(stdout);
-				}
-			} while (opcion != '0');
-			volcarBBDDClienteAFichero(FICHERO_CLIENTE, db);
-			volcarBBDDLibroAFichero(FICHERO_LIBROS, db);
+				break;
+			case '0':
+				sprintf(sendBuff,"Hasta pronto!!\n");
+				send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);
 
+				escribirLog("Se ha cerrado sesión.");
+				insertarLog("\033[3;35m Se ha cerrado sesión.\033[0m\n");
+				break;
+			default:
+				sprintf(sendBuff,
+						"\033[0;31mOpción invalida. Por favor, ingrese una opción válida.\n\033[0m");
+				send(comm_socket, sendBuff, strlen(sendBuff)+1, 0);
+
+			}
+		} while (opcion != '0');
+		volcarBBDDClienteAFichero(FICHERO_CLIENTE, db);
+		volcarBBDDLibroAFichero(FICHERO_LIBROS, db);
 
 		/*ACABA EL PROGRAMA DEL SERVIDOR*/
 

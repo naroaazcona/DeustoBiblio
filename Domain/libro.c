@@ -35,10 +35,10 @@ Libro pedirDatosLibro() {
 	return l;
 }
 
-void visualizarTitulosLibro() {
-	printf("\033[1;33m%30s|%30s|%20s|%40s|%20s|%20s\n\033[0m", "ISBN", "TÍTULO", "AÑO PUBLICACIÓN",
+void visualizarTitulosLibro(SOCKET comm_socket, char *sendBuff) {
+	sprintf(sendBuff,"\033[1;33m%30s|%30s|%20s|%40s|%20s|%20s\n\033[0m", "ISBN", "TÍTULO", "AÑO PUBLICACIÓN",
 			"AUTOR", "GÉNERO", "DISPONIBILIDAD");
-	fflush(stdout);
+	send(comm_socket,sendBuff,strlen(sendBuff)+1,0);  //enviar
 
 }
 
