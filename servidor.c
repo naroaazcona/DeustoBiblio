@@ -191,7 +191,7 @@ int main(int argc, char *argv[]) {
 							case '4':
 								printf("Visualizar datos de los libros:\n");
 								fflush(stdout);
-								visualizarLibrosBBDD(db);
+//								visualizarLibrosBBDD(db);
 								sleep(1);
 								break;
 							case '0':

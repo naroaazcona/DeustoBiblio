@@ -1,4 +1,5 @@
 #include "baseDatos.h"
+#include <winsock2.h>
 
 sqlite3* conectarDB() {
 	sqlite3 *db;

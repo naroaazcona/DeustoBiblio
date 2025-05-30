@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <winsock2.h>
 #include "sqlite3.h"
 #include "../Domain/libro.h"
 #include "../Domain/cliente.h"
